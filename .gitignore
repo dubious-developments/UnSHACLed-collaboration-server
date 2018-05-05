@@ -1,0 +1,9 @@
+# Build folders.
+bin/
+obj/
+
+# NuGet packages.
+packages/
+
+# IDE preferences.
+.vs/
