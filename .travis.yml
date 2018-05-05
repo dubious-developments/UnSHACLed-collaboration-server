@@ -1,0 +1,16 @@
+language: csharp
+apt:
+  packages:
+    - python3-pip
+
+solution: src/UnSHACLed.Collaboration/UnSHACLed.Collaboration.sln
+
+install:
+  # Grab the requests module. We need it for the tests.
+  - sudo pip3 install requests
+
+script:
+  # Build the server.
+  - xbuild /p:Configuration=Debug src/UnSHACLed.Collaboration/UnSHACLed.Collaboration.sln
+  # Run the unit tests.
+  - python3 test/server_tests.py
