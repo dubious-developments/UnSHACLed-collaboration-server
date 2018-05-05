@@ -1,4 +1,7 @@
 language: csharp
+
+dist: trusty
+
 apt:
   packages:
     - python3-pip
