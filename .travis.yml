@@ -2,9 +2,10 @@ language: csharp
 
 dist: trusty
 
-apt:
-  packages:
-    - python3-pip
+addons:
+  apt:
+    packages:
+      - python3-pip
 
 solution: src/UnSHACLed.Collaboration/UnSHACLed.Collaboration.sln
 
