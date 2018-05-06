@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Nancy;
 
 namespace UnSHACLed.Collaboration
@@ -11,8 +13,14 @@ namespace UnSHACLed.Collaboration
             : base("auth")
         {
             Post["/request-token"] = args => {
-                return "hi";
+                return User.Create(UnauthenticatedUserLifetime).Token;
             };
         }
+
+        /// <summary>
+        /// The amount of time before an unauthenticated user
+        /// token expires.
+        /// </summary>
+        private readonly TimeSpan UnauthenticatedUserLifetime = TimeSpan.FromMinutes(1);
     }
 }

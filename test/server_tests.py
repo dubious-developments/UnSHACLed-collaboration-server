@@ -55,7 +55,7 @@ class TestAuthentication(unittest.TestCase):
     def test_request_token(self):
         """Tests that a token can be requested."""
         response = requests.post(domain + '/auth/request-token')
-        assert response.text == 'hi'
+        assert response.ok
 
 if __name__ == '__main__':
     server = start_server()
