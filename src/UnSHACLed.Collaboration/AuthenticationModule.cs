@@ -44,6 +44,6 @@ namespace UnSHACLed.Collaboration
         /// The amount of time before an unauthenticated user
         /// token expires.
         /// </summary>
-        private readonly TimeSpan UnauthenticatedUserLifetime = TimeSpan.FromMinutes(1);
+        private readonly TimeSpan UnauthenticatedUserLifetime = TimeSpan.FromMinutes(5);
     }
 }
