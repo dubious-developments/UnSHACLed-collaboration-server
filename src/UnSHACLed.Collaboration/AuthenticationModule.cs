@@ -31,7 +31,7 @@ namespace UnSHACLed.Collaboration
                     RedirectUri = new Uri(GitHubClientData.Domain, "/auth/after-auth/" + user.Token)
                 };
 
-                return GitHubClientData.Client.Oauth.GetGitHubLoginUrl(request);
+                return Response.AsRedirect(GitHubClientData.Client.Oauth.GetGitHubLoginUrl(request).AbsoluteUri);
             };
 
             Post["/after-auth/{token}"] = args =>
