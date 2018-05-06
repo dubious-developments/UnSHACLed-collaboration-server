@@ -18,6 +18,17 @@ namespace UnSHACLed.Collaboration
                 return User.Create(UnauthenticatedUserLifetime).Token;
             };
 
+            Get["/is-authenticated/{token}"] = args =>
+            {
+                User user;
+                if (!User.TryGetByToken(args.token, out user))
+                {
+                    return HttpStatusCode.BadRequest;
+                }
+
+                return user.IsAuthenticated;
+            };
+
             Get["/auth/{token}"] = args =>
             {
                 User user;

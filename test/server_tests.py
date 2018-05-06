@@ -58,6 +58,10 @@ class TestAuthentication(unittest.TestCase):
         """Tests that a token can be requested."""
         response = requests.post(domain + '/auth/request-token')
         assert response.ok
+        token = response.text
+        response = requests.get(domain + '/auth/is-authenticated/' + token)
+        assert response.ok
+        assert response.text == "false"
 
 
 if __name__ == '__main__':
