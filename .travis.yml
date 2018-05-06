@@ -12,6 +12,8 @@ solution: src/UnSHACLed.Collaboration/UnSHACLed.Collaboration.sln
 install:
   # Grab the requests module. We need it for the tests.
   - sudo pip3 install requests
+  # Download NuGet packages.
+  - nuget restore src/UnSHACLed.Collaboration/UnSHACLed.Collaboration.sln
 
 script:
   # Build the server.
