@@ -15,6 +15,6 @@ install:
 
 script:
   # Build the server.
-  - xbuild /p:Configuration=Debug src/UnSHACLed.Collaboration/UnSHACLed.Collaboration.sln
+  - msbuild /p:Configuration=Debug src/UnSHACLed.Collaboration/UnSHACLed.Collaboration.sln
   # Run the unit tests.
   - python3 test/server_tests.py
