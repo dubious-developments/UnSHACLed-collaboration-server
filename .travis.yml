@@ -19,4 +19,4 @@ script:
   # Build the server.
   - msbuild /p:Configuration=Debug src/UnSHACLed.Collaboration/UnSHACLed.Collaboration.sln
   # Run the unit tests.
-  - python3 test/server_tests.py
+  - python3 test/server_tests.py x x

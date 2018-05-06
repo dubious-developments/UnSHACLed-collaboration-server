@@ -20,9 +20,44 @@ namespace UnSHACLed.Collaboration
                     OptionForm.Long("domains"),
                     OptionForm.Short("d")
                 })
+            .WithCategory("Required options")
             .WithParameters(new SymbolicOptionParameter("uri", true))
             .WithDescription(
                 "Specifies a list of domains to which the application will listen.");
+
+        /// <summary>
+        /// The 'client-id' option, which specifies the GitHub client
+        /// ID to use.
+        /// </summary>
+        public static readonly Option ClientId =
+            ValueOption.CreateStringOption(
+                new OptionForm[]
+                {
+                    OptionForm.Long("client-id"),
+                    OptionForm.Short("i")
+                },
+                "")
+            .WithCategory("Required options")
+            .WithParameter(new SymbolicOptionParameter("id"))
+            .WithDescription(
+                "Specifies the GitHub client ID to use.");
+
+        /// <summary>
+        /// The 'client-secret' option, which specifies the GitHub client
+        /// secret to use.
+        /// </summary>
+        public static readonly Option ClientSecret =
+            ValueOption.CreateStringOption(
+                new OptionForm[]
+                {
+                    OptionForm.Long("client-secret"),
+                    OptionForm.Short("s")
+                },
+                "")
+            .WithCategory("Required options")
+            .WithParameter(new SymbolicOptionParameter("secret"))
+            .WithDescription(
+                "Specifies the GitHub client secret to use.");
 
         /// <summary>
         /// The 'help' option.
@@ -39,6 +74,8 @@ namespace UnSHACLed.Collaboration
         /// </summary>
         public static readonly IReadOnlyList<Option> All = new[]
         {
+            ClientId,
+            ClientSecret,
             Domains,
             Help
         };

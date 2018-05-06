@@ -37,18 +37,26 @@ namespace UnSHACLed.Collaboration
                         Severity.Message,
                         new HelpMessage(
                             "Runs an UnSHACLed collaboration server.",
-                            "collaboration-server [url-or-options...]",
+                            "collaboration-server [options...]",
                             Options.All)));
                 return 0;
             }
 
             var domainUris = ParseDomains(parsedOptions, log);
+            var clientId = parsedOptions.GetValue<string>(Options.ClientId);
+            var clientSecret = parsedOptions.GetValue<string>(Options.ClientSecret);
+
+            CheckMandatoryStringOptionHasArg(Options.ClientId, parsedOptions, log);
+            CheckMandatoryStringOptionHasArg(Options.ClientSecret, parsedOptions, log);
+
             if (log.Contains(Severity.Error))
             {
-                // Looks like the domain names didn't check out.
+                // Looks like the options were ill-formatted.
                 // An error has already been reported. Just exit.
                 return 1;
             }
+
+            GitHubClientData.Configure(domainUris[0], clientId, clientSecret);
 
             using (var nancyHost = new NancyHost(domainUris))
             {
@@ -127,6 +135,31 @@ namespace UnSHACLed.Collaboration
                         transformed.Severity,
                         WrapBox.WordWrap(transformed.Contents));
                 });
+        }
+
+        /// <summary>
+        /// Checks that a mandatory string-valued option actually
+        /// has an argument.
+        /// </summary>
+        /// <param name="option">The mandatory string-valued option.</param>
+        /// <param name="parsedOptions">Parsed command-line arguments.</param>
+        /// <param name="log">A log to send errors to.</param>
+        private static void CheckMandatoryStringOptionHasArg(
+            Option option,
+            OptionSet parsedOptions,
+            ILog log)
+        {
+            if (string.IsNullOrWhiteSpace(parsedOptions.GetValue<string>(option)))
+            {
+                log.Log(
+                    new Pixie.LogEntry(
+                        Severity.Error,
+                        "missing option",
+                        Quotation.QuoteEvenInBold(
+                            "option ",
+                            option.Forms[0].ToString(),
+                            " is mandatory but left blank.")));
+            }
         }
     }
 }

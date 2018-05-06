@@ -135,7 +135,7 @@ namespace UnSHACLed.Collaboration
         /// otherwise, <c>false</c>.
         /// </returns>
         public static bool TryGetByToken(
-            string token, User user)
+            string token, out User user)
         {
             lock (allUsers)
             {
