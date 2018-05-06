@@ -45,7 +45,7 @@ namespace UnSHACLed.Collaboration
                 return Response.AsRedirect(GitHubClientData.Client.Oauth.GetGitHubLoginUrl(request).AbsoluteUri);
             };
 
-            Post["/after-auth/{token}?code={code}", true] = async (args, ct) =>
+            Get["/after-auth/{token}", true] = async (args, ct) =>
             {
                 User user;
                 if (!User.TryGetByToken(args.token, out user))
@@ -61,7 +61,7 @@ namespace UnSHACLed.Collaboration
                 var request = new OauthTokenRequest(
                     GitHubClientData.ClientId,
                     GitHubClientData.ClientSecret,
-                    args.code);
+                    Request.Query.code);
 
                 // Store it.
                 user.GitHubToken = await GitHubClientData.Client.Oauth.CreateAccessToken(request);
