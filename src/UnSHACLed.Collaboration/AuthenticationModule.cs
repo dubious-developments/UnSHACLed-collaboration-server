@@ -28,14 +28,31 @@ namespace UnSHACLed.Collaboration
 
                 var request = new OauthLoginRequest(GitHubClientData.ClientId)
                 {
-                    RedirectUri = new Uri(GitHubClientData.Domain, "/auth/after-auth/" + user.Token)
+                    RedirectUri = new Uri(GitHubClientData.Domain, "auth/after-auth/" + user.Token)
                 };
 
                 return Response.AsRedirect(GitHubClientData.Client.Oauth.GetGitHubLoginUrl(request).AbsoluteUri);
             };
 
-            Post["/after-auth/{token}"] = args =>
+            Post["/after-auth/{token}?access_token={githubToken}&token_type={tokenType}", true] = async (args, ct) =>
             {
+                User user;
+                if (!User.TryGetByToken(args.token, out user))
+                {
+                    // Eh, well.
+                    return HttpStatusCode.OK;
+                }
+
+                // Extend the user's lifetime so they don't die on us.
+                user.ExtendLifetime(AuthenticatedUserLifetime);
+
+                // Get an OAuth token.
+                var request = new OauthTokenRequest(
+                    GitHubClientData.ClientId,
+                    GitHubClientData.ClientSecret,
+                    args.githubToken);
+                user.GitHubToken = await GitHubClientData.Client.Oauth.CreateAccessToken(request);
+
                 return HttpStatusCode.OK;
             };
         }
@@ -45,5 +62,11 @@ namespace UnSHACLed.Collaboration
         /// token expires.
         /// </summary>
         private readonly TimeSpan UnauthenticatedUserLifetime = TimeSpan.FromMinutes(5);
+
+        /// <summary>
+        /// The amount of time before an authenticated user
+        /// token expires.
+        /// </summary>
+        private readonly TimeSpan AuthenticatedUserLifetime = TimeSpan.FromHours(2);
     }
 }
