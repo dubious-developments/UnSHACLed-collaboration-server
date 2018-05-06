@@ -66,6 +66,19 @@ namespace UnSHACLed.Collaboration
         public void ExtendLifetime(TimeSpan extension)
         {
             ExpirationDate += extension;
+            if (IsActive)
+            {
+                // We may have extended the lifetime of a user that
+                // just expired and was subsequently garbage collected.
+                // Revive the user by adding them to dictionary again.
+                lock (allUsers)
+                {
+                    if (!allUsers.ContainsKey(Token))
+                    {
+                        allUsers[Token] = this;
+                    }
+                }
+            }
         }
 
         private static readonly Dictionary<string, User> allUsers
