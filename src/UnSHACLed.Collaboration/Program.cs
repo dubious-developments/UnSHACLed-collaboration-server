@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Nancy.Hosting.Self;
 using Pixie;
 using Pixie.Markup;
@@ -67,9 +68,10 @@ namespace UnSHACLed.Collaboration
                         "server started",
                         "server is up now."));
 
+                // Keep serving until the application is closed.
                 while (true)
                 {
-                    Console.ReadLine();
+                    Thread.Sleep(Timeout.Infinite);
                 }
             }
         }
