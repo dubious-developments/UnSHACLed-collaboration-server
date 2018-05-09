@@ -51,7 +51,10 @@ namespace UnSHACLed.Collaboration
                 if (!User.TryGetByToken(args.token, out user))
                 {
                     // Eh, well.
-                    return HttpStatusCode.OK;
+                    return HtmlHelpers.CreateHtmlPage(
+                        "Session expired",
+                        "<h1>Oops.</h1> <div>Something went wrong. Your session token probably expired. " +
+                        "Trying again might work.</div>");
                 }
 
                 // Extend the user's lifetime so they don't die on us.
@@ -66,7 +69,9 @@ namespace UnSHACLed.Collaboration
                 // Store it.
                 user.GitHubToken = await GitHubClientData.Client.Oauth.CreateAccessToken(request);
 
-                return HttpStatusCode.OK;
+                return HtmlHelpers.CreateHtmlPage(
+                    "Authentication successful",
+                    "<h1>You did it!</h1> <div>Yay! You successfully managed to authenticate! 🎉</div>");
             };
         }
 
