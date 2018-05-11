@@ -89,14 +89,14 @@ namespace UnSHACLed.Collaboration
                 lock (lockDictionary)
                 {
                     var lockOwner = GetLockOwner(repoOwner, repoName, filePath);
-                    if (lockOwner.Token == user.Token)
-                    {
-                        return Task.FromResult(HttpStatusCode.BadRequest);
-                    }
-                    else
+                    if (lockOwner == null || lockOwner.Token == user.Token)
                     {
                         lockDictionary[CreateLockName(repoOwner, repoName, filePath)] = null;
                         return Task.FromResult(HttpStatusCode.OK);
+                    }
+                    else
+                    {
+                        return Task.FromResult(HttpStatusCode.BadRequest);
                     }
                 }
             });
