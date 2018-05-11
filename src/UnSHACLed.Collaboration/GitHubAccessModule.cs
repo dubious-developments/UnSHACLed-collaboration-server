@@ -27,7 +27,40 @@ namespace UnSHACLed.Collaboration
             string apiRoute,
             Func<dynamic, GitHubClient, Task<T>> useClient)
         {
-            Get[apiRoute, true] = async (args, ct) =>
+            RegisterGitHubApi<T>(Get, apiRoute, useClient);
+        }
+
+        /// <summary>
+        /// Registers a PUT API with the module.
+        /// </summary>
+        /// <param name="apiRoute">
+        /// The route to register.
+        /// </param>
+        /// <param name="useClient">
+        /// A function that uses the client.
+        /// </param>
+        protected void RegisterGitHubPut<T>(
+            string apiRoute,
+            Func<dynamic, GitHubClient, Task<T>> useClient)
+        {
+            RegisterGitHubApi<T>(Put, apiRoute, useClient);
+        }
+
+        /// <summary>
+        /// Registers an API with the module.
+        /// </summary>
+        /// <param name="apiRoute">
+        /// The route to register.
+        /// </param>
+        /// <param name="useClient">
+        /// A function that uses the client.
+        /// </param>
+        private void RegisterGitHubApi<T>(
+            RouteBuilder routeBuilder,
+            string apiRoute,
+            Func<dynamic, GitHubClient, Task<T>> useClient)
+        {
+            routeBuilder[apiRoute, true] = async (args, ct) =>
             {
                 User user;
                 if (!User.TryGetByToken(args.token, out user))
