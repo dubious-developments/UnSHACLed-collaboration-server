@@ -15,8 +15,6 @@ namespace UnSHACLed.Collaboration
         public RepoModule()
             : base("repo")
         {
-            this.lockDictionary = new Dictionary<string, User>();
-
             RegisterGitHubGet<dynamic>(
                 "/file/{owner}/{repoName}/{token}/{filePath}",
                 async (args, client) =>
@@ -38,7 +36,7 @@ namespace UnSHACLed.Collaboration
             });
 
             RegisterUserGet<bool>(
-                "/lock/{owner}/{repoName}/{token}/{filePath}",
+                "/has-lock/{owner}/{repoName}/{token}/{filePath}",
                 (args, user) =>
             {
                 string repoOwner = args.owner;
@@ -104,7 +102,8 @@ namespace UnSHACLed.Collaboration
             });
         }
 
-        private Dictionary<string, User> lockDictionary;
+        private static Dictionary<string, User> lockDictionary =
+            new Dictionary<string, User>();
 
         private static string CreateLockName(
             string repoOwner,
@@ -114,7 +113,7 @@ namespace UnSHACLed.Collaboration
             return repoOwner + "/" + repoName + "/" + filePath;
         }
 
-        private User GetLockOwner(
+        private static User GetLockOwner(
             string repoOwner,
             string repoName,
             string filePath)
