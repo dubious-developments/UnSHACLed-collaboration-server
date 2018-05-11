@@ -41,6 +41,8 @@ namespace UnSHACLed.Collaboration
                 {
                     RedirectUri = new Uri(GitHubClientData.Domain, "auth/after-auth/" + user.Token)
                 };
+                request.Scopes.Add("repo");
+                request.Scopes.Add("user:email");
 
                 return Response.AsRedirect(GitHubClientData.Client.Oauth.GetGitHubLoginUrl(request).AbsoluteUri);
             };
