@@ -14,7 +14,7 @@ namespace UnSHACLed.Collaboration
             : base("repo")
         {
             RegisterGitHubGet<dynamic>(
-                "/file/{owner}/{repoName}/{token}?file={filePath}",
+                "/file/{owner}/{repoName}/{token}/{filePath}",
                 async (args, client) =>
             {
                 string repoOwner = args.owner;
