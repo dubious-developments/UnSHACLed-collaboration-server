@@ -21,18 +21,8 @@ namespace UnSHACLed.Collaboration
 
             RegisterGitHubGet("/repo-list/{token}", async client =>
             {
-                var allRepos = new List<Repository>();
-                allRepos.AddRange(await client.Repository.GetAllForCurrent());
-
-                var allOrgs = await client.Organization.GetAllForCurrent();
-                var orgRepoLists = await Task.WhenAll(
-                    allOrgs.Select(org => client.Repository.GetAllForOrg(org.Name)));
-
-                foreach (var repoList in orgRepoLists)
-                {
-                    allRepos.AddRange(repoList);
-                }
-
+                var allRepos = await client.Repository.GetAllForCurrent(
+                    new RepositoryRequest { Affiliation = RepositoryAffiliation.All });
                 return allRepos.Select(repo => repo.FullName).ToArray();
             });
         }
