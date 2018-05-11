@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuthenticationModule.cs" />
+    <Compile Include="GitHubAccessModule.cs" />
     <Compile Include="GitHubClientData.cs" />
     <Compile Include="HtmlHelpers.cs" />
     <Compile Include="Options.cs" />
