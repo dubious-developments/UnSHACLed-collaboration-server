@@ -91,7 +91,7 @@ namespace UnSHACLed.Collaboration
                     var lockOwner = GetLockOwner(repoOwner, repoName, filePath);
                     if (lockOwner == null || lockOwner.Token == user.Token)
                     {
-                        lockDictionary[CreateLockName(repoOwner, repoName, filePath)] = null;
+                        lockDictionary.Remove(CreateLockName(repoOwner, repoName, filePath));
                         return Task.FromResult(HttpStatusCode.OK);
                     }
                     else
@@ -102,7 +102,7 @@ namespace UnSHACLed.Collaboration
             });
         }
 
-        private static Dictionary<string, User> lockDictionary =
+        private static readonly Dictionary<string, User> lockDictionary =
             new Dictionary<string, User>();
 
         private static string CreateLockName(
