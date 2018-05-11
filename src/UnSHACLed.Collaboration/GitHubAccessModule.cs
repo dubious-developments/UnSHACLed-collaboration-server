@@ -25,7 +25,7 @@ namespace UnSHACLed.Collaboration
         /// </param>
         protected void RegisterGitHubGet<T>(
             string apiRoute,
-            Func<GitHubClient, Task<T>> useClient)
+            Func<dynamic, GitHubClient, Task<T>> useClient)
         {
             Get[apiRoute, true] = async (args, ct) =>
             {
@@ -36,9 +36,9 @@ namespace UnSHACLed.Collaboration
                 }
                 else if (user.IsAuthenticated)
                 {
-                    return await GitHubClientData.UseClientAsync(
+                    return await GitHubClientData.UseClientAsync<T>(
                         user.GitHubToken,
-                        useClient);
+                        client => useClient(args, client));
                 }
                 else
                 {

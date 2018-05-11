@@ -19,7 +19,7 @@ namespace UnSHACLed.Collaboration
             RegisterGetUserData("/name/{token}", user => user.Name);
             RegisterGetUserData("/email/{token}", user => user.Email);
 
-            RegisterGitHubGet("/repo-list/{token}", async client =>
+            RegisterGitHubGet("/repo-list/{token}", async (args, client) =>
             {
                 var allRepos = await client.Repository.GetAllForCurrent(
                     new RepositoryRequest { Affiliation = RepositoryAffiliation.All });
@@ -29,7 +29,7 @@ namespace UnSHACLed.Collaboration
 
         private void RegisterGetUserData<T>(string apiRoute, Func<Octokit.User, T> mapUser)
         {
-            RegisterGitHubGet(apiRoute, async client =>
+            RegisterGitHubGet(apiRoute, async (args, client) =>
             {
                 var ghUser = await client.User.Current();
                 return mapUser(ghUser);
