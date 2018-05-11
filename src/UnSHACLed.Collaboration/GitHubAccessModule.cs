@@ -23,9 +23,9 @@ namespace UnSHACLed.Collaboration
         /// <param name="useClient">
         /// A function that uses the client.
         /// </param>
-        protected void RegisterGitHubGet(
+        protected void RegisterGitHubGet<T>(
             string apiRoute,
-            Func<GitHubClient, Task<dynamic>> useClient)
+            Func<GitHubClient, Task<T>> useClient)
         {
             Get[apiRoute, true] = async (args, ct) =>
             {
