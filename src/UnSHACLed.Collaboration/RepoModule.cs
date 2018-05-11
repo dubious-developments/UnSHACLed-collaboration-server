@@ -64,9 +64,10 @@ namespace UnSHACLed.Collaboration
                 lock (lockDictionary)
                 {
                     var lockOwner = GetLockOwner(repoOwner, repoName, filePath);
-                    if (lockOwner == null || lockOwner.Token != user.Token)
+                    if (lockOwner == null)
                     {
-                        return Task.FromResult(false);
+                        lockDictionary[CreateLockName(repoOwner, repoName, filePath)] = user;
+                        return Task.FromResult(true);
                     }
                     else if (lockOwner.Token == user.Token)
                     {
@@ -74,8 +75,7 @@ namespace UnSHACLed.Collaboration
                     }
                     else
                     {
-                        lockDictionary[CreateLockName(repoOwner, repoName, filePath)] = user;
-                        return Task.FromResult(true);
+                        return Task.FromResult(false);
                     }
                 }
             });
