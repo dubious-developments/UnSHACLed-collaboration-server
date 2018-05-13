@@ -50,12 +50,30 @@ namespace UnSHACLed.Collaboration
                     }
                 }
 
-                var contents = await client.Repository.Content.GetAllContents(
-                    repoOwner, repoName, filePath);
-
                 string newFileContents = Request.Body.AsString();
 
-                if (contents.Count == 0)
+                try
+                {
+                    var contents = await client.Repository.Content.GetAllContents(
+                        repoOwner, repoName, filePath);
+                    if (contents.Count == 1)
+                    {
+                        await client.Repository.Content.UpdateFile(
+                            repoOwner,
+                            repoName,
+                            filePath,
+                            new UpdateFileRequest(
+                                "Update file '" + filePath + "'",
+                                newFileContents,
+                                contents[0].Sha));
+                        return HttpStatusCode.OK;
+                    }
+                    else
+                    {
+                        return HttpStatusCode.BadRequest;
+                    }
+                }
+                catch (NotFoundException)
                 {
                     await client.Repository.Content.CreateFile(
                         repoOwner,
@@ -65,22 +83,6 @@ namespace UnSHACLed.Collaboration
                             "Create file '" + filePath + "'",
                             newFileContents));
                     return HttpStatusCode.Created;
-                }
-                else if (contents.Count == 1)
-                {
-                    await client.Repository.Content.UpdateFile(
-                        repoOwner,
-                        repoName,
-                        filePath,
-                        new UpdateFileRequest(
-                            "Update file '" + filePath + "'",
-                            newFileContents,
-                            contents[0].Sha));
-                    return HttpStatusCode.OK;
-                }
-                else
-                {
-                    return HttpStatusCode.BadRequest;
                 }
             });
 
