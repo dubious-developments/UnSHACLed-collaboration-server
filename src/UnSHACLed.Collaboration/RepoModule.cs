@@ -7,7 +7,8 @@ using Octokit;
 namespace UnSHACLed.Collaboration
 {
     /// <summary>
-    /// A Nancy module that provides information about GitHub repositories.
+    /// A Nancy module that allows clients to access and
+    /// manipulate GitHub repositories.
     /// </summary>
     public class RepoModule : GitHubAccessModule
     {

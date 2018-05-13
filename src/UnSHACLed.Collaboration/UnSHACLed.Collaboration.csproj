@@ -60,6 +60,7 @@
     <Compile Include="RepoModule.cs" />
     <Compile Include="User.cs" />
     <Compile Include="UserModule.cs" />
+    <Compile Include="WorkspaceModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
