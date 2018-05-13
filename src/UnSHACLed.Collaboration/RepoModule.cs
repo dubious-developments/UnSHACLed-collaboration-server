@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Nancy;
 using Nancy.Extensions;
@@ -67,6 +69,7 @@ namespace UnSHACLed.Collaboration
                                 "Update file '" + filePath + "'",
                                 newFileContents,
                                 contents[0].Sha));
+                        UpdateFileChangedTimestamp(repoOwner, repoName, filePath);
                         return HttpStatusCode.OK;
                     }
                     else
@@ -83,7 +86,49 @@ namespace UnSHACLed.Collaboration
                         new CreateFileRequest(
                             "Create file '" + filePath + "'",
                             newFileContents));
+                    UpdateFileChangedTimestamp(repoOwner, repoName, filePath);
                     return HttpStatusCode.Created;
+                }
+            });
+
+            RegisterGitHubGet<dynamic>(
+                "/poll-file/{owner}/{repoName}/{token}/{filePath}",
+                async (args, user, client) =>
+            {
+                string repoOwner = args.owner;
+                string repoName = args.repoName;
+                string filePath = args.filePath;
+
+                var prevTimestamp = DateTime.Parse(Request.Body.AsString());
+                DateTime changeTimestamp;
+                bool isModified = HasFileChanged(
+                    repoOwner,
+                    repoName,
+                    filePath,
+                    prevTimestamp,
+                    out changeTimestamp);
+
+                var response = new Dictionary<string, object>();
+                response["isModified"] = isModified;
+                response["lastChange"] = changeTimestamp;
+                if (isModified)
+                {
+                    var contents = await client.Repository.Content.GetAllContents(
+                    repoOwner, repoName, filePath);
+
+                    if (contents.Count == 1)
+                    {
+                        response["contents"] = contents[0].Content;
+                        return response;
+                    }
+                    else
+                    {
+                        return HttpStatusCode.BadRequest;
+                    }
+                }
+                else
+                {
+                    return response;
                 }
             });
 
@@ -116,7 +161,7 @@ namespace UnSHACLed.Collaboration
                     var lockOwner = GetLockOwner(repoOwner, repoName, filePath);
                     if (lockOwner == null)
                     {
-                        lockDictionary[CreateLockName(repoOwner, repoName, filePath)] = user;
+                        lockDictionary[CreateFileKey(repoOwner, repoName, filePath)] = user;
                         return Task.FromResult(true);
                     }
                     else if (lockOwner.Token == user.Token)
@@ -143,7 +188,7 @@ namespace UnSHACLed.Collaboration
                     var lockOwner = GetLockOwner(repoOwner, repoName, filePath);
                     if (lockOwner == null || lockOwner.Token == user.Token)
                     {
-                        lockDictionary.Remove(CreateLockName(repoOwner, repoName, filePath));
+                        lockDictionary.Remove(CreateFileKey(repoOwner, repoName, filePath));
                         return Task.FromResult(HttpStatusCode.OK);
                     }
                     else
@@ -157,7 +202,13 @@ namespace UnSHACLed.Collaboration
         private static readonly Dictionary<string, User> lockDictionary =
             new Dictionary<string, User>();
 
-        private static string CreateLockName(
+        private static readonly Dictionary<string, DateTime> fileChangeTimestamps =
+            new Dictionary<string, DateTime>();
+
+        private static readonly ReaderWriterLockSlim fileChangeLock
+            = new ReaderWriterLockSlim();
+
+        private static string CreateFileKey(
             string repoOwner,
             string repoName,
             string filePath)
@@ -170,7 +221,7 @@ namespace UnSHACLed.Collaboration
             string repoName,
             string filePath)
         {
-            string key = CreateLockName(repoOwner, repoName, filePath);
+            string key = CreateFileKey(repoOwner, repoName, filePath);
             User owner;
             if (lockDictionary.TryGetValue(key, out owner))
             {
@@ -187,6 +238,51 @@ namespace UnSHACLed.Collaboration
             else
             {
                 return null;
+            }
+        }
+
+        private static DateTime UpdateFileChangedTimestamp(
+            string repoOwner,
+            string repoName,
+            string filePath)
+        {
+            string key = CreateFileKey(repoOwner, repoName, filePath);
+            var timestamp = DateTime.Now;
+            try
+            {
+                fileChangeLock.EnterWriteLock();
+                fileChangeTimestamps[key] = timestamp;
+            }
+            finally
+            {
+                fileChangeLock.ExitWriteLock();
+            }
+            return timestamp;
+        }
+
+        private static bool HasFileChanged(
+            string repoOwner,
+            string repoName,
+            string filePath,
+            DateTime previousTimestamp,
+            out DateTime changeTimestamp)
+        {
+            string key = CreateFileKey(repoOwner, repoName, filePath);
+            try
+            {
+                fileChangeLock.EnterReadLock();
+                if (fileChangeTimestamps.TryGetValue(key, out changeTimestamp))
+                {
+                    return changeTimestamp > previousTimestamp;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            finally
+            {
+                fileChangeLock.ExitReadLock();
             }
         }
     }
