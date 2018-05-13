@@ -25,7 +25,7 @@ namespace UnSHACLed.Collaboration
         /// </param>
         protected void RegisterGitHubGet<T>(
             string apiRoute,
-            Func<dynamic, GitHubClient, Task<T>> useClient)
+            Func<dynamic, User, GitHubClient, Task<T>> useClient)
         {
             RegisterGitHubApi<T>(Get, apiRoute, useClient);
         }
@@ -41,7 +41,7 @@ namespace UnSHACLed.Collaboration
         /// </param>
         protected void RegisterGitHubPut<T>(
             string apiRoute,
-            Func<dynamic, GitHubClient, Task<T>> useClient)
+            Func<dynamic, User, GitHubClient, Task<T>> useClient)
         {
             RegisterGitHubApi<T>(Put, apiRoute, useClient);
         }
@@ -57,7 +57,7 @@ namespace UnSHACLed.Collaboration
         /// </param>
         protected void RegisterGitHubPost<T>(
             string apiRoute,
-            Func<dynamic, GitHubClient, Task<T>> useClient)
+            Func<dynamic, User, GitHubClient, Task<T>> useClient)
         {
             RegisterGitHubApi<T>(Post, apiRoute, useClient);
         }
@@ -160,7 +160,7 @@ namespace UnSHACLed.Collaboration
         private void RegisterGitHubApi<T>(
             RouteBuilder routeBuilder,
             string apiRoute,
-            Func<dynamic, GitHubClient, Task<T>> useClient)
+            Func<dynamic, User, GitHubClient, Task<T>> useClient)
         {
             RegisterUserApi<T>(
                 routeBuilder,
@@ -168,7 +168,7 @@ namespace UnSHACLed.Collaboration
                 (args, user) =>
                     GitHubClientData.UseClientAsync<T>(
                         user.GitHubToken,
-                        client => useClient(args, client)));
+                        client => useClient(args, user, client)));
         }
     }
 }

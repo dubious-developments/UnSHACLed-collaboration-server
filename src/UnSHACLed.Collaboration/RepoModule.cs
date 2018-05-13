@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Nancy;
+using Nancy.Extensions;
 using Octokit;
 
 namespace UnSHACLed.Collaboration
@@ -17,7 +16,7 @@ namespace UnSHACLed.Collaboration
         {
             RegisterGitHubGet<dynamic>(
                 "/file/{owner}/{repoName}/{token}/{filePath}",
-                async (args, client) =>
+                async (args, user, client) =>
             {
                 string repoOwner = args.owner;
                 string repoName = args.repoName;
@@ -28,6 +27,56 @@ namespace UnSHACLed.Collaboration
                 if (contents.Count == 1)
                 {
                     return contents[0].Content;
+                }
+                else
+                {
+                    return HttpStatusCode.BadRequest;
+                }
+            });
+
+            RegisterGitHubPut<dynamic>(
+                "/file/{owner}/{repoName}/{token}/{filePath}",
+                async (args, user, client) =>
+            {
+                string repoOwner = args.owner;
+                string repoName = args.repoName;
+                string filePath = args.filePath;
+                lock (lockDictionary)
+                {
+                    var lockOwner = GetLockOwner(repoOwner, repoName, filePath);
+                    if (lockOwner != user)
+                    {
+                        return HttpStatusCode.BadRequest;
+                    }
+                }
+
+                var contents = await client.Repository.Content.GetAllContents(
+                    repoOwner, repoName, filePath);
+
+                string newFileContents = Request.Body.AsString();
+
+                if (contents.Count == 0)
+                {
+                    await client.Repository.Content.CreateFile(
+                        repoOwner,
+                        repoName,
+                        filePath,
+                        new CreateFileRequest(
+                            "Create file '" + filePath + "'",
+                            newFileContents));
+                    return HttpStatusCode.Created;
+                }
+                else if (contents.Count == 1)
+                {
+                    await client.Repository.Content.UpdateFile(
+                        repoOwner,
+                        repoName,
+                        filePath,
+                        new UpdateFileRequest(
+                            "Update file '" + filePath + "'",
+                            newFileContents,
+                            contents[0].Sha));
+                    return HttpStatusCode.OK;
                 }
                 else
                 {
