@@ -281,6 +281,7 @@ namespace UnSHACLed.Collaboration
                 }
                 else
                 {
+                    changeTimestamp = previousTimestamp;
                     return false;
                 }
             }
