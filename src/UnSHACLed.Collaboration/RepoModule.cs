@@ -99,7 +99,11 @@ namespace UnSHACLed.Collaboration
                 string repoName = args.repoName;
                 string filePath = args.filePath;
 
-                var prevTimestamp = DateTime.Parse(Request.Body.AsString());
+                string timestampStr = Request.Body.AsString();
+                var prevTimestamp = string.IsNullOrWhiteSpace(timestampStr)
+                    ? DateTime.MinValue
+                    : DateTime.Parse(timestampStr);
+
                 DateTime changeTimestamp;
                 bool isModified = HasFileChanged(
                     repoOwner,
