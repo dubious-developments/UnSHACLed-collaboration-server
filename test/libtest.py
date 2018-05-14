@@ -5,6 +5,7 @@ import os
 import platform
 from subprocess import Popen
 
+
 def log(s, color_code=36):
     """Logs a message."""
     if os.name == 'nt':
@@ -45,3 +46,31 @@ def start_server(domain, client_id, client_secret):
             # log('Waiting for server...')
             pass
     return server
+
+
+def request_token(domain):
+    """Requests a token from the server."""
+    response = requests.post(domain + '/auth/request-token')
+    assert response.ok
+    return response.text
+
+
+def is_authenticated(domain, token):
+    """Tests if a user's token is authenticated."""
+    response = requests.get(domain + '/auth/is-authenticated/' + token)
+    assert response.ok
+    return bool(response.text)
+
+
+def get_workspace(domain, token):
+    """Gets an authenticated user's workspace."""
+    response = requests.get('%s/workspace/%s' % (domain, token))
+    assert response.ok
+    return response.text
+
+
+def set_workspace(domain, token, workspace_contents):
+    """Sets an authenticated user's workspace."""
+    response = requests.put(
+        '%s/workspace/%s' % (domain, token), data=workspace_contents)
+    assert response.ok
