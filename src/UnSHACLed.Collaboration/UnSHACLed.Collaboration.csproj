@@ -52,8 +52,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuthenticationModule.cs" />
+    <Compile Include="ContentTracker.cs" />
     <Compile Include="GitHubAccessModule.cs" />
     <Compile Include="GitHubClientData.cs" />
+    <Compile Include="GitHubContentTracker.cs" />
     <Compile Include="HtmlHelpers.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />

@@ -1,0 +1,101 @@
+using System;
+using Nancy;
+using Octokit;
+
+namespace UnSHACLed.Collaboration
+{
+    /// <summary>
+    /// A content tracker implementation based on the GitHub API.
+    /// </summary>
+    public sealed class GitHubContentTracker : ContentTracker
+    {
+        /// <summary>
+        /// Creates a GitHub content tracker implementation.
+        /// </summary>
+        /// <param name="domain">The main domain where the application is hosted.</param>
+        /// <param name="clientId">The client ID of the application.</param>
+        /// <param name="clientSecret">The client secret of the application.</param>
+        public GitHubContentTracker(Uri domain, string clientId, string clientSecret)
+        {
+            Domain = domain;
+            ClientId = clientId;
+            ClientSecret = clientSecret;
+            authClient = new GitHubClient(new ProductHeaderValue("UnSHACLed"));
+        }
+
+        /// <summary>
+        /// Gets the main domain where the application is hosted.
+        /// </summary>
+        /// <returns>The domain.</returns>
+        public Uri Domain { get; private set; }
+
+        /// <summary>
+        /// Gets the client ID used by the application.
+        /// </summary>
+        /// <returns>The client ID.</returns>
+        public string ClientId { get; private set; }
+
+        /// <summary>
+        /// Gets the client secret of the application.
+        /// </summary>
+        /// <returns>The client secret.</returns>
+        public string ClientSecret { get; private set; }
+
+        /// <summary>
+        /// The GitHub client to use for authenticating users.
+        /// </summary>
+        /// <returns>The authentication GitHub client.</returns>
+        private GitHubClient authClient;
+
+        /// <inheritdoc/>
+        public override void ConfigureAuthenticationModule(NancyModule module)
+        {
+            module.Get["/auth/{token}"] = args =>
+            {
+                User user;
+                if (!User.TryGetByToken(args.token, out user))
+                {
+                    return HttpStatusCode.BadRequest;
+                }
+
+                var request = new OauthLoginRequest(ClientId)
+                {
+                    RedirectUri = new Uri(Domain, "auth/after-auth/" + user.Token)
+                };
+                request.Scopes.Add("repo");
+                request.Scopes.Add("user:email");
+
+                return module.Response.AsRedirect(authClient.Oauth.GetGitHubLoginUrl(request).AbsoluteUri);
+            };
+
+            module.Get["/after-auth/{token}", true] = async (args, ct) =>
+            {
+                User user;
+                if (!User.TryGetByToken(args.token, out user))
+                {
+                    // Eh, well.
+                    return HtmlHelpers.CreateHtmlPage(
+                        "Session expired",
+                        "<h1>Oops.</h1> <div>Something went wrong. Your session token probably expired. " +
+                        "Trying again might work.</div>");
+                }
+
+                // Extend the user's lifetime so they don't die on us.
+                user.ExtendLifetime(AuthenticationModule.AuthenticatedUserLifetime);
+
+                // Request an OAuth token.
+                var request = new OauthTokenRequest(
+                    ClientId,
+                    ClientSecret,
+                    module.Request.Query.code);
+
+                // Store it.
+                user.GitHubToken = await authClient.Oauth.CreateAccessToken(request);
+
+                return HtmlHelpers.CreateHtmlPage(
+                    "Authentication successful",
+                    "<h1>You did it!</h1> <div>Yay! You successfully managed to authenticate! 🎉</div>");
+            };
+        }
+    }
+}

@@ -57,7 +57,8 @@ namespace UnSHACLed.Collaboration
                 return 1;
             }
 
-            GitHubClientData.Configure(domainUris[0], clientId, clientSecret);
+            GitHubClientData.ContentTracker = new GitHubContentTracker(
+                domainUris[0], clientId, clientSecret);
 
             using (var nancyHost = new NancyHost(domainUris))
             {
