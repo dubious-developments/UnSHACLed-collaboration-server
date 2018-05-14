@@ -20,7 +20,7 @@ namespace UnSHACLed.Collaboration
                     return LoadWorkspace(login);
                 });
 
-            RegisterContentTrackerGet(
+            RegisterContentTrackerPut(
                 "/{token}",
                 async (args, user, client) => {
                     var login = await client.GetLogin();
