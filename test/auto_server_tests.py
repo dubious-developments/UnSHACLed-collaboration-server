@@ -4,7 +4,7 @@
 import unittest
 import requests
 import sys
-from libtest import log, start_server, request_token, is_authenticated
+from libclient import log, start_server, request_token, is_authenticated
 
 domain = 'http://localhost:8080'
 

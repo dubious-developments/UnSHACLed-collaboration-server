@@ -96,6 +96,7 @@ def get_email(domain, token):
     assert response.ok
     return response.text
 
+
 def get_repo_names(domain, token):
     """Gets a list of all repositories for a user."""
     response = requests.get('%s/user/repo-list/%s' % (domain, token))
