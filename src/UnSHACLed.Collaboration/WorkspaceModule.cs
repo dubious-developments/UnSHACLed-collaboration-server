@@ -13,18 +13,18 @@ namespace UnSHACLed.Collaboration
         public WorkspaceModule()
             : base("workspace")
         {
-            RegisterGitHubGet(
+            RegisterContentTrackerGet(
                 "/{token}",
                 async (args, user, client) => {
-                    var ghUser = await client.User.Current();
-                    return LoadWorkspace(ghUser.Login);
+                    var login = await client.GetLogin();
+                    return LoadWorkspace(login);
                 });
 
-            RegisterGitHubPut(
+            RegisterContentTrackerGet(
                 "/{token}",
                 async (args, user, client) => {
-                    var ghUser = await client.User.Current();
-                    SaveWorkspace(ghUser.Login, Request.Body.AsString());
+                    var login = await client.GetLogin();
+                    SaveWorkspace(login, Request.Body.AsString());
                     return HttpStatusCode.OK;
                 });
         }
