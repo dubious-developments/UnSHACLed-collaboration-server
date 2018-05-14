@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Nancy;
 using Octokit;
 
@@ -96,6 +97,80 @@ namespace UnSHACLed.Collaboration
                     "Authentication successful",
                     "<h1>You did it!</h1> <div>Yay! You successfully managed to authenticate! 🎉</div>");
             };
+        }
+    }
+
+    /// <summary>
+    /// A content tracker token implementation for the GitHub API.
+    /// </summary>
+    public sealed class GitHubContentTrackerToken : ContentTrackerToken
+    {
+        /// <summary>
+        /// Creates a GitHub content tracker token.
+        /// </summary>
+        /// <param name="token">A GitHub API OAuth token.</param>
+        public GitHubContentTrackerToken(OauthToken token)
+        {
+            this.Token = token;
+        }
+
+        /// <summary>
+        /// Gets the GitHub OAuth token wrapped by this content tracker token.
+        /// </summary>
+        /// <returns>An OAuth token.</returns>
+        public OauthToken Token { get; private set; }
+
+        /// <inheritdoc/>
+        public override Task<T> UseClient<T>(Func<ContentTrackerClient, Task<T>> use)
+        {
+            var userClient = new GitHubClient(new ProductHeaderValue("UnSHACLed"));
+            userClient.Credentials = new Credentials(Token.AccessToken);
+            return use(new GitHubContentTrackerClient(userClient));
+        }
+    }
+
+    /// <summary>
+    /// A generic content tracker client that wraps a GitHub API client.
+    /// </summary>
+    public sealed class GitHubContentTrackerClient : ContentTrackerClient
+    {
+        /// <summary>
+        /// Creates a content tracker client for the GitHub API.
+        /// </summary>
+        /// <param name="client">The GitHub API client to wrap.</param>
+        public GitHubContentTrackerClient(GitHubClient client)
+        {
+            this.Client = client;
+        }
+
+        /// <summary>
+        /// Gets the GitHub API client wrapped by this content tracker client.
+        /// </summary>
+        /// <returns>A GitHub API client.</returns>
+        public GitHubClient Client { get; private set; }
+
+        private async Task<T> GetUserInfo<T>(Func<Octokit.User, T> query)
+        {
+            var user = await Client.User.Current();
+            return query(user);
+        }
+
+        /// <inheritdoc/>
+        public override Task<string> GetEmail()
+        {
+            return GetUserInfo(user => user.Email);
+        }
+
+        /// <inheritdoc/>
+        public override Task<string> GetLogin()
+        {
+            return GetUserInfo(user => user.Login);
+        }
+
+        /// <inheritdoc/>
+        public override Task<string> GetName()
+        {
+            return GetUserInfo(user => user.Name);
         }
     }
 }
