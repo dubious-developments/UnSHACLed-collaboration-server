@@ -7,6 +7,7 @@ import sys
 import libclient
 
 domain = 'http://193.190.127.184:8042'
+test_repo_name = 'dubious-developments/editor-test'
 
 
 def user_sign_in():
@@ -14,9 +15,8 @@ def user_sign_in():
     # Request a token.
     token = libclient.request_token(domain)
     # Get it authenticated by the user.
-    libclient.log(
-        'You need to sign in before the tests can run. '
-        'Sign in using your browser and hit enter when you\'re done')
+    libclient.log('You need to sign in before the tests can run. '
+                  'Sign in using your browser and hit enter when you\'re done')
     print('Clicky link: %s/auth/auth/%s' % (domain, token))
     # Read an empty string.
     input('>')
@@ -47,8 +47,7 @@ class TestUser(unittest.TestCase):
 
     def test_repo_names(self):
         """Tests that a list of repository names can be retrieved."""
-        # The 'test' is that this doesn't throw.
-        libclient.get_repo_names(domain, token)
+        assert test_repo_name in libclient.get_repo_names(domain, token)
 
 
 class TestWorkspace(unittest.TestCase):
