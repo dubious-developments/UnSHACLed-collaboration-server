@@ -102,3 +102,34 @@ def get_repo_names(domain, token):
     response = requests.get('%s/user/repo-list/%s' % (domain, token))
     assert response.ok
     return response.json()
+
+
+def request_lock(domain, token, repo_slug, file_path):
+    """Requests a lock on a file in a repository."""
+    response = requests.post('%s/repo/request-lock/%s/%s/%s' %
+                             (domain, repo_slug, token, file_path))
+    response.raise_for_status()
+    return bool(response.text)
+
+
+def relinquish_lock(domain, token, repo_slug, file_path):
+    """Releases a lock on a file in a repository."""
+    response = requests.post('%s/repo/relinquish-lock/%s/%s/%s' %
+                             (domain, repo_slug, token, file_path))
+    response.raise_for_status()
+
+
+def get_file_contents(domain, token, repo_slug, file_path):
+    """Gets a file's contents."""
+    response = requests.get('%s/repo/file/%s/%s/%s' %
+                            (domain, repo_slug, token, file_path))
+    response.raise_for_status()
+    return response.text
+
+
+def set_file_contents(domain, token, repo_slug, file_path, contents):
+    """Sets a file's contents."""
+    response = requests.put(
+        '%s/repo/file/%s/%s/%s' % (domain, repo_slug, token, file_path),
+        data=contents)
+    response.raise_for_status()

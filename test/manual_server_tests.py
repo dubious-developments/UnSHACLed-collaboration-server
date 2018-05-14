@@ -4,6 +4,7 @@
 import unittest
 import requests
 import sys
+import random
 import libclient
 
 domain = 'http://193.190.127.184:8042'
@@ -64,6 +65,26 @@ class TestWorkspace(unittest.TestCase):
         # Restore the old workspace.
         libclient.set_workspace(domain, token, old_workspace)
         assert libclient.get_workspace(domain, token) == old_workspace
+
+
+class TestRepo(unittest.TestCase):
+    def test_round_trip(self):
+        """Tests that a file can be round-tripped."""
+        file_name = 'test-file.txt'
+
+        # Acquire a lock.
+        assert libclient.request_lock(domain, token, test_repo_name, file_name)
+
+        # Include a random number in the message so our changes
+        # don't accidentally become no-ops.
+        random_number = random.randint(0, 10000)
+        message = 'The number I\'m thinking of is %d.\n' % random_number
+        libclient.set_file_contents(domain, token, test_repo_name, file_name,
+                                    message)
+        assert libclient.get_file_contents(domain, token, test_repo_name,
+                                           file_name) == message
+
+        libclient.relinquish_lock(domain, token, test_repo_name, file_name)
 
 
 if __name__ == '__main__':
