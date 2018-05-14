@@ -74,3 +74,30 @@ def set_workspace(domain, token, workspace_contents):
     response = requests.put(
         '%s/workspace/%s' % (domain, token), data=workspace_contents)
     assert response.ok
+
+
+def get_login(domain, token):
+    """Gets a user's login."""
+    response = requests.get('%s/user/login/%s' % (domain, token))
+    assert response.ok
+    return response.text
+
+
+def get_name(domain, token):
+    """Gets a user's name."""
+    response = requests.get('%s/user/name/%s' % (domain, token))
+    assert response.ok
+    return response.text
+
+
+def get_email(domain, token):
+    """Gets a user's email address."""
+    response = requests.get('%s/user/email/%s' % (domain, token))
+    assert response.ok
+    return response.text
+
+def get_repo_names(domain, token):
+    """Gets a list of all repositories for a user."""
+    response = requests.get('%s/user/repo-list/%s' % (domain, token))
+    assert response.ok
+    return response.json()
