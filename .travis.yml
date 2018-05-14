@@ -19,7 +19,7 @@ script:
   # Build the server.
   - msbuild /p:Configuration=Debug src/UnSHACLed.Collaboration/UnSHACLed.Collaboration.sln
   # Run the unit tests.
-  - python3 test/server_tests.py $CLIENT_ID $CLIENT_SECRET
+  - python3 test/auto_server_tests.py $CLIENT_ID $CLIENT_SECRET
 
 env:
   global:
