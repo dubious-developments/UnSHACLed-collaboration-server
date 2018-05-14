@@ -62,6 +62,55 @@ namespace UnSHACLed.Collaboration
             RegisterGitHubApi<T>(Post, apiRoute, useClient);
         }
 
+
+        /// <summary>
+        /// Registers a GET API with the module.
+        /// </summary>
+        /// <param name="apiRoute">
+        /// The route to register.
+        /// </param>
+        /// <param name="useClient">
+        /// A function that uses a content tracker client.
+        /// </param>
+        protected void RegisterContentTrackerGet<T>(
+            string apiRoute,
+            Func<dynamic, User, ContentTrackerClient, Task<T>> useClient)
+        {
+            RegisterContentTrackerApi<T>(Get, apiRoute, useClient);
+        }
+
+        /// <summary>
+        /// Registers a PUT API with the module.
+        /// </summary>
+        /// <param name="apiRoute">
+        /// The route to register.
+        /// </param>
+        /// <param name="useClient">
+        /// A function that uses a content tracker client.
+        /// </param>
+        protected void RegisterContentTrackerPut<T>(
+            string apiRoute,
+            Func<dynamic, User, ContentTrackerClient, Task<T>> useClient)
+        {
+            RegisterContentTrackerApi<T>(Put, apiRoute, useClient);
+        }
+
+        /// <summary>
+        /// Registers a POST API with the module.
+        /// </summary>
+        /// <param name="apiRoute">
+        /// The route to register.
+        /// </param>
+        /// <param name="useClient">
+        /// A function that uses a content tracker client.
+        /// </param>
+        protected void RegisterContentTrackerPost<T>(
+            string apiRoute,
+            Func<dynamic, User, ContentTrackerClient, Task<T>> useClient)
+        {
+            RegisterContentTrackerApi<T>(Post, apiRoute, useClient);
+        }
+
         /// <summary>
         /// Registers a GET API with the module.
         /// </summary>
@@ -169,6 +218,30 @@ namespace UnSHACLed.Collaboration
                     GitHubClientData.UseClientAsync<T>(
                         user.GitHubToken,
                         client => useClient(args, user, client)));
+        }
+
+        /// <summary>
+        /// Registers an API with the module.
+        /// </summary>
+        /// <param name="routeBuilder">
+        /// The route builder to register a route with.
+        /// </param>
+        /// <param name="apiRoute">
+        /// The route to register.
+        /// </param>
+        /// <param name="useClient">
+        /// A function that uses the client.
+        /// </param>
+        private void RegisterContentTrackerApi<T>(
+            RouteBuilder routeBuilder,
+            string apiRoute,
+            Func<dynamic, User, ContentTrackerClient, Task<T>> useClient)
+        {
+            RegisterGitHubApi<T>(
+                routeBuilder,
+                apiRoute,
+                (args, user, client) =>
+                    useClient(args, user, new GitHubContentTrackerClient(client)));
         }
     }
 }

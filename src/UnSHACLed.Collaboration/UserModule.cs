@@ -15,24 +15,15 @@ namespace UnSHACLed.Collaboration
         public UserModule()
             : base("user")
         {
-            RegisterGetUserData("/login/{token}", user => user.Login);
-            RegisterGetUserData("/name/{token}", user => user.Name);
-            RegisterGetUserData("/email/{token}", user => user.Email);
+            RegisterContentTrackerGet("/login/{token}", (args, user, client) => client.GetLogin());
+            RegisterContentTrackerGet("/name/{token}", (args, user, client) => client.GetName());
+            RegisterContentTrackerGet("/email/{token}", (args, user, client) => client.GetEmail());
 
             RegisterGitHubGet("/repo-list/{token}", async (args, user, client) =>
             {
                 var allRepos = await client.Repository.GetAllForCurrent(
                     new RepositoryRequest { Affiliation = RepositoryAffiliation.All });
                 return allRepos.Select(repo => repo.FullName).ToArray();
-            });
-        }
-
-        private void RegisterGetUserData<T>(string apiRoute, Func<Octokit.User, T> mapUser)
-        {
-            RegisterGitHubGet(apiRoute, async (args, user, client) =>
-            {
-                var ghUser = await client.User.Current();
-                return mapUser(ghUser);
             });
         }
     }
