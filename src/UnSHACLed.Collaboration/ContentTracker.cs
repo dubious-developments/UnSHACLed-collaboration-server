@@ -68,5 +68,26 @@ namespace UnSHACLed.Collaboration
         /// </summary>
         /// <returns>A list of all repository names.</returns>
         public abstract Task<IReadOnlyList<string>> GetRepositoryNames();
+
+        /// <summary>
+        /// Fetches a file's contents.
+        /// </summary>
+        /// <param name="repoOwner">
+        /// The owner of the repository the file lives in.
+        /// </param>
+        /// <param name="repoName">
+        /// The name of the repository the file lives in.
+        /// </param>
+        /// <param name="filePath">
+        /// The path to the file in the repository.
+        /// </param>
+        /// <returns>
+        /// A task that produces the file's contents.
+        /// Throws an exception if something goes wrong.
+        /// </returns>
+        public abstract Task<string> GetFileContents(
+            string repoOwner,
+            string repoName,
+            string filePath);
     }
 }

@@ -182,5 +182,26 @@ namespace UnSHACLed.Collaboration
                 new RepositoryRequest { Affiliation = RepositoryAffiliation.All });
             return allRepos.Select(repo => repo.FullName).ToArray();
         }
+
+        /// <inheritdoc/>
+        public override async Task<string> GetFileContents(
+            string repoOwner,
+            string repoName,
+            string filePath)
+        {
+            var contents = await Client.Repository.Content.GetAllContents(
+                repoOwner,
+                repoName,
+                filePath);
+
+            if (contents.Count == 1)
+            {
+                return contents[0].Content;
+            }
+            else
+            {
+                throw new ContentTrackerException();
+            }
+        }
     }
 }

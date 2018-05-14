@@ -17,21 +17,20 @@ namespace UnSHACLed.Collaboration
         public RepoModule()
             : base("repo")
         {
-            RegisterGitHubGet<dynamic>(
+            RegisterContentTrackerGet<dynamic>(
                 "/file/{owner}/{repoName}/{token}/{filePath}",
                 async (args, user, client) =>
             {
                 string repoOwner = args.owner;
                 string repoName = args.repoName;
                 string filePath = args.filePath;
-                var contents = await client.Repository.Content.GetAllContents(
-                    repoOwner, repoName, filePath);
 
-                if (contents.Count == 1)
+                try
                 {
-                    return contents[0].Content;
+                    return await client.GetFileContents(
+                        repoOwner, repoName, filePath);
                 }
-                else
+                catch (ContentTrackerException)
                 {
                     return HttpStatusCode.BadRequest;
                 }
