@@ -90,7 +90,7 @@ namespace UnSHACLed.Collaboration
                 }
             });
 
-            RegisterGitHubGet<dynamic>(
+            RegisterContentTrackerGet<dynamic>(
                 "/poll-file/{owner}/{repoName}/{token}/{filePath}",
                 async (args, user, client) =>
             {
@@ -116,15 +116,12 @@ namespace UnSHACLed.Collaboration
                 response["lastChange"] = changeTimestamp;
                 if (isModified)
                 {
-                    var contents = await client.Repository.Content.GetAllContents(
-                    repoOwner, repoName, filePath);
-
-                    if (contents.Count == 1)
+                    try
                     {
-                        response["contents"] = contents[0].Content;
-                        return response;
+                        return await client.GetFileContents(
+                            repoOwner, repoName, filePath);
                     }
-                    else
+                    catch (ContentTrackerException)
                     {
                         return HttpStatusCode.BadRequest;
                     }
