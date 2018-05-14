@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Nancy;
 using Octokit;
@@ -171,6 +173,14 @@ namespace UnSHACLed.Collaboration
         public override Task<string> GetName()
         {
             return GetUserInfo(user => user.Name);
+        }
+
+        /// <inheritdoc/>
+        public override async Task<IReadOnlyList<string>> GetRepositoryNames()
+        {
+            var allRepos = await Client.Repository.GetAllForCurrent(
+                new RepositoryRequest { Affiliation = RepositoryAffiliation.All });
+            return allRepos.Select(repo => repo.FullName).ToArray();
         }
     }
 }

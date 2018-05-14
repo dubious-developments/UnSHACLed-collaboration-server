@@ -18,13 +18,7 @@ namespace UnSHACLed.Collaboration
             RegisterContentTrackerGet("/login/{token}", (args, user, client) => client.GetLogin());
             RegisterContentTrackerGet("/name/{token}", (args, user, client) => client.GetName());
             RegisterContentTrackerGet("/email/{token}", (args, user, client) => client.GetEmail());
-
-            RegisterGitHubGet("/repo-list/{token}", async (args, user, client) =>
-            {
-                var allRepos = await client.Repository.GetAllForCurrent(
-                    new RepositoryRequest { Affiliation = RepositoryAffiliation.All });
-                return allRepos.Select(repo => repo.FullName).ToArray();
-            });
+            RegisterContentTrackerGet("/repo-list/{token}", (args, user, client) => client.GetRepositoryNames());
         }
     }
 }

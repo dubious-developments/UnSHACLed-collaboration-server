@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Nancy;
 
@@ -60,5 +61,12 @@ namespace UnSHACLed.Collaboration
         /// </summary>
         /// <returns>A task that produces the user's email.</returns>
         public abstract Task<string> GetEmail();
+
+        /// <summary>
+        /// Gets a list of the full names of all repositories
+        /// associated with the authenticated user.
+        /// </summary>
+        /// <returns>A list of all repository names.</returns>
+        public abstract Task<IReadOnlyList<string>> GetRepositoryNames();
     }
 }
