@@ -10,7 +10,7 @@ namespace UnSHACLed.Collaboration
     /// <summary>
     /// A Nancy module that provides information about authenticated users.
     /// </summary>
-    public class UserModule : GitHubAccessModule
+    public class UserModule : ContentTrackerAccessModule
     {
         public UserModule()
             : base("user")

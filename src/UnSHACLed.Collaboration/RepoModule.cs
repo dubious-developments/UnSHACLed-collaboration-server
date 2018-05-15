@@ -12,7 +12,7 @@ namespace UnSHACLed.Collaboration
     /// A Nancy module that allows clients to access and
     /// manipulate GitHub repositories.
     /// </summary>
-    public class RepoModule : GitHubAccessModule
+    public class RepoModule : ContentTrackerAccessModule
     {
         public RepoModule()
             : base("repo")

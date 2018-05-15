@@ -5,9 +5,9 @@ using Octokit;
 namespace UnSHACLed.Collaboration
 {
     /// <summary>
-    /// Data pertaining to this application's role as a GitHub client.
+    /// Data pertaining to this application's role as a content tracker client.
     /// </summary>
-    public static class GitHubClientData
+    public static class ContentTrackerCredentials
     {
         /// <summary>
         /// Gets the content tracker to use.

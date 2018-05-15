@@ -30,7 +30,7 @@ namespace UnSHACLed.Collaboration
             };
 
             // Configure authentication workflow.
-            GitHubClientData.ContentTracker.ConfigureAuthenticationModule(this);
+            ContentTrackerCredentials.ContentTracker.ConfigureAuthenticationModule(this);
         }
 
         /// <summary>

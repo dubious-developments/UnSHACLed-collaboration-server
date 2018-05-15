@@ -6,11 +6,12 @@ using Octokit;
 namespace UnSHACLed.Collaboration
 {
     /// <summary>
-    /// A base class for modules that have GitHub access.
+    /// A base class for modules that have access to the
+    /// content tracker.
     /// </summary>
-    public abstract class GitHubAccessModule : NancyModule
+    public abstract class ContentTrackerAccessModule : NancyModule
     {
-        protected GitHubAccessModule(string moduleName)
+        protected ContentTrackerAccessModule(string moduleName)
             : base(moduleName)
         { }
 
@@ -166,7 +167,7 @@ namespace UnSHACLed.Collaboration
                 routeBuilder,
                 apiRoute,
                 (args, user) =>
-                    GitHubClientData.UseClientAsync<T>(
+                    ContentTrackerCredentials.UseClientAsync<T>(
                         user.GitHubToken,
                         client => useClient(args, user, client)));
         }

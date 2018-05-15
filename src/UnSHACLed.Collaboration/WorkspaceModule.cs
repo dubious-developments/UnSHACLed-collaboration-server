@@ -8,7 +8,7 @@ namespace UnSHACLed.Collaboration
     /// <summary>
     /// A Nancy module that allows workspaces to be stored and retrieved.
     /// </summary>
-    public class WorkspaceModule : GitHubAccessModule
+    public class WorkspaceModule : ContentTrackerAccessModule
     {
         public WorkspaceModule()
             : base("workspace")
