@@ -21,55 +21,6 @@ namespace UnSHACLed.Collaboration
         /// The route to register.
         /// </param>
         /// <param name="useClient">
-        /// A function that uses a GitHub client.
-        /// </param>
-        protected void RegisterGitHubGet<T>(
-            string apiRoute,
-            Func<dynamic, User, GitHubClient, Task<T>> useClient)
-        {
-            RegisterGitHubApi<T>(Get, apiRoute, useClient);
-        }
-
-        /// <summary>
-        /// Registers a PUT API with the module.
-        /// </summary>
-        /// <param name="apiRoute">
-        /// The route to register.
-        /// </param>
-        /// <param name="useClient">
-        /// A function that uses a GitHub client.
-        /// </param>
-        protected void RegisterGitHubPut<T>(
-            string apiRoute,
-            Func<dynamic, User, GitHubClient, Task<T>> useClient)
-        {
-            RegisterGitHubApi<T>(Put, apiRoute, useClient);
-        }
-
-        /// <summary>
-        /// Registers a POST API with the module.
-        /// </summary>
-        /// <param name="apiRoute">
-        /// The route to register.
-        /// </param>
-        /// <param name="useClient">
-        /// A function that uses a GitHub client.
-        /// </param>
-        protected void RegisterGitHubPost<T>(
-            string apiRoute,
-            Func<dynamic, User, GitHubClient, Task<T>> useClient)
-        {
-            RegisterGitHubApi<T>(Post, apiRoute, useClient);
-        }
-
-
-        /// <summary>
-        /// Registers a GET API with the module.
-        /// </summary>
-        /// <param name="apiRoute">
-        /// The route to register.
-        /// </param>
-        /// <param name="useClient">
         /// A function that uses a content tracker client.
         /// </param>
         protected void RegisterContentTrackerGet<T>(
