@@ -200,7 +200,50 @@ namespace UnSHACLed.Collaboration
             }
             else
             {
-                throw new ContentTrackerException();
+                throw new ContentTrackerException(
+                    "Entity at path '" + filePath + "' is not a file.");
+            }
+        }
+
+        /// <inheritdoc/>
+        public override async Task<bool> SetFileContents(
+            string repoOwner,
+            string repoName,
+            string filePath,
+            string contents)
+        {
+            try
+            {
+                var oldContents = await Client.Repository.Content.GetAllContents(
+                    repoOwner, repoName, filePath);
+                if (oldContents.Count == 1)
+                {
+                    await Client.Repository.Content.UpdateFile(
+                        repoOwner,
+                        repoName,
+                        filePath,
+                        new UpdateFileRequest(
+                            "Update file '" + filePath + "'",
+                            contents,
+                            oldContents[0].Sha));
+                    return false;
+                }
+                else
+                {
+                    throw new ContentTrackerException(
+                        "Entity at path '" + filePath + "' is not a file.");
+                }
+            }
+            catch (NotFoundException)
+            {
+                await Client.Repository.Content.CreateFile(
+                    repoOwner,
+                    repoName,
+                    filePath,
+                    new CreateFileRequest(
+                        "Create file '" + filePath + "'",
+                        contents));
+                return true;
             }
         }
     }

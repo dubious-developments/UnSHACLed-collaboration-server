@@ -89,5 +89,32 @@ namespace UnSHACLed.Collaboration
             string repoOwner,
             string repoName,
             string filePath);
+
+        /// <summary>
+        /// Sets a file's contents. Creates the file if it does
+        /// not exist already.
+        /// </summary>
+        /// <param name="repoOwner">
+        /// The owner of the repository the file lives in.
+        /// </param>
+        /// <param name="repoName">
+        /// The name of the repository the file lives in.
+        /// </param>
+        /// <param name="filePath">
+        /// The path to the file in the repository.
+        /// </param>
+        /// <param name="contents">
+        /// The contents to assign to the file.
+        /// </param>
+        /// <returns>
+        /// A task that returns <c>true</c> if a new file was
+        /// created; otherwise, a task that returns <c>false</c>.
+        /// Throws an exception if something goes wrong.
+        /// </returns>
+        public abstract Task<bool> SetFileContents(
+            string repoOwner,
+            string repoName,
+            string filePath,
+            string contents);
     }
 }

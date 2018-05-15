@@ -36,7 +36,7 @@ namespace UnSHACLed.Collaboration
                 }
             });
 
-            RegisterGitHubPut<dynamic>(
+            RegisterContentTrackerPut<dynamic>(
                 "/file/{owner}/{repoName}/{token}/{filePath}",
                 async (args, user, client) =>
             {
@@ -56,37 +56,20 @@ namespace UnSHACLed.Collaboration
 
                 try
                 {
-                    var contents = await client.Repository.Content.GetAllContents(
-                        repoOwner, repoName, filePath);
-                    if (contents.Count == 1)
-                    {
-                        await client.Repository.Content.UpdateFile(
-                            repoOwner,
-                            repoName,
-                            filePath,
-                            new UpdateFileRequest(
-                                "Update file '" + filePath + "'",
-                                newFileContents,
-                                contents[0].Sha));
-                        UpdateFileChangedTimestamp(repoOwner, repoName, filePath);
-                        return HttpStatusCode.OK;
-                    }
-                    else
-                    {
-                        return HttpStatusCode.BadRequest;
-                    }
-                }
-                catch (NotFoundException)
-                {
-                    await client.Repository.Content.CreateFile(
+                    bool createdNewFile = await client.SetFileContents(
                         repoOwner,
                         repoName,
                         filePath,
-                        new CreateFileRequest(
-                            "Create file '" + filePath + "'",
-                            newFileContents));
+                        newFileContents);
+
                     UpdateFileChangedTimestamp(repoOwner, repoName, filePath);
-                    return HttpStatusCode.Created;
+                    return createdNewFile
+                        ? HttpStatusCode.Created
+                        : HttpStatusCode.OK;
+                }
+                catch (ContentTrackerException)
+                {
+                    return HttpStatusCode.BadRequest;
                 }
             });
 
