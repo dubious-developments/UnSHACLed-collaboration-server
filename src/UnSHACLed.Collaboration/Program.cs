@@ -44,11 +44,22 @@ namespace UnSHACLed.Collaboration
             }
 
             var domainUris = ParseDomains(parsedOptions, log);
-            var clientId = parsedOptions.GetValue<string>(Options.ClientId);
-            var clientSecret = parsedOptions.GetValue<string>(Options.ClientSecret);
 
-            CheckMandatoryStringOptionHasArg(Options.ClientId, parsedOptions, log);
-            CheckMandatoryStringOptionHasArg(Options.ClientSecret, parsedOptions, log);
+            if (parsedOptions.GetValue<bool>(Options.MockContentTracker))
+            {
+                ContentTrackerCredentials.ContentTracker = new InMemoryContentTracker();
+            }
+            else
+            {
+                var clientId = parsedOptions.GetValue<string>(Options.ClientId);
+                var clientSecret = parsedOptions.GetValue<string>(Options.ClientSecret);
+
+                CheckMandatoryStringOptionHasArg(Options.ClientId, parsedOptions, log);
+                CheckMandatoryStringOptionHasArg(Options.ClientSecret, parsedOptions, log);
+
+                ContentTrackerCredentials.ContentTracker = new GitHubContentTracker(
+                    domainUris[0], clientId, clientSecret);
+            }
 
             if (log.Contains(Severity.Error))
             {
@@ -56,9 +67,6 @@ namespace UnSHACLed.Collaboration
                 // An error has already been reported. Just exit.
                 return 1;
             }
-
-            ContentTrackerCredentials.ContentTracker = new GitHubContentTracker(
-                domainUris[0], clientId, clientSecret);
 
             using (var nancyHost = new NancyHost(domainUris))
             {

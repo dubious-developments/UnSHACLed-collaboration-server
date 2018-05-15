@@ -69,6 +69,17 @@ namespace UnSHACLed.Collaboration
             .WithDescription("Prints a help message.");
 
         /// <summary>
+        /// The 'mock-content-tracker' option, which makes the server use an
+        /// in-memory content tracker.
+        /// </summary>
+        public static readonly Option MockContentTracker =
+            FlagOption.CreateFlagOption(
+                OptionForm.Long("mock-content-tracker"))
+            .WithDescription(
+                "Uses a mock content tracker instead of the " +
+                "default GitHub content tracker.");
+
+        /// <summary>
         /// A read-only list of all options accepted by the collaboration
         /// server.
         /// </summary>
@@ -77,7 +88,8 @@ namespace UnSHACLed.Collaboration
             ClientId,
             ClientSecret,
             Domains,
-            Help
+            Help,
+            MockContentTracker
         };
     }
 }
