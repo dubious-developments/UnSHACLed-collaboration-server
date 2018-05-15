@@ -40,10 +40,10 @@ namespace UnSHACLed.Collaboration
         public DateTime ExpirationDate { get; private set; }
 
         /// <summary>
-        /// Gets a GitHub OAuth token for the user, if any.
+        /// Gets a content tracker token for the user, if any.
         /// </summary>
-        /// <returns>The user's GitHub OAuth token.</returns>
-        public OauthToken GitHubToken { get; set; }
+        /// <returns>The user's content tracker token.</returns>
+        public ContentTrackerToken ContentTrackerToken { get; set; }
 
         /// <summary>
         /// Tells if this user is still active, that is, their
@@ -54,7 +54,7 @@ namespace UnSHACLed.Collaboration
         /// <summary>
         /// Tests if this user is authenticated.
         /// </summary>
-        public bool IsAuthenticated => GitHubToken != null;
+        public bool IsAuthenticated => ContentTrackerToken != null;
 
         /// <summary>
         /// Postpones this user's expiration date by a particular

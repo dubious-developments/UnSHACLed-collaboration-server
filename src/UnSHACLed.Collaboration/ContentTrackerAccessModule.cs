@@ -158,42 +158,17 @@ namespace UnSHACLed.Collaboration
         /// <param name="useClient">
         /// A function that uses the client.
         /// </param>
-        private void RegisterGitHubApi<T>(
-            RouteBuilder routeBuilder,
-            string apiRoute,
-            Func<dynamic, User, GitHubClient, Task<T>> useClient)
-        {
-            RegisterUserApi<T>(
-                routeBuilder,
-                apiRoute,
-                (args, user) =>
-                    ContentTrackerCredentials.UseClientAsync<T>(
-                        user.GitHubToken,
-                        client => useClient(args, user, client)));
-        }
-
-        /// <summary>
-        /// Registers an API with the module.
-        /// </summary>
-        /// <param name="routeBuilder">
-        /// The route builder to register a route with.
-        /// </param>
-        /// <param name="apiRoute">
-        /// The route to register.
-        /// </param>
-        /// <param name="useClient">
-        /// A function that uses the client.
-        /// </param>
         private void RegisterContentTrackerApi<T>(
             RouteBuilder routeBuilder,
             string apiRoute,
             Func<dynamic, User, ContentTrackerClient, Task<T>> useClient)
         {
-            RegisterGitHubApi<T>(
+            RegisterUserApi<T>(
                 routeBuilder,
                 apiRoute,
-                (args, user, client) =>
-                    useClient(args, user, new GitHubContentTrackerClient(client)));
+                (args, user) =>
+                    user.ContentTrackerToken.UseClient<T>(client =>
+                        useClient(args, user, client)));
         }
     }
 }

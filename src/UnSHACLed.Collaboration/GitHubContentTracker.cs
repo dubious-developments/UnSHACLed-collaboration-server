@@ -93,7 +93,8 @@ namespace UnSHACLed.Collaboration
                     module.Request.Query.code);
 
                 // Store it.
-                user.GitHubToken = await authClient.Oauth.CreateAccessToken(request);
+                user.ContentTrackerToken = new GitHubContentTrackerToken(
+                    await authClient.Oauth.CreateAccessToken(request));
 
                 return HtmlHelpers.CreateHtmlPage(
                     "Authentication successful",
