@@ -13,7 +13,7 @@ class TestAuthentication(unittest.TestCase):
     def test_request_token(self):
         """Tests that a token can be requested."""
         token = request_token(domain)
-        assert is_authenticated(domain, token)
+        assert not is_authenticated(domain, token)
 
 
 if __name__ == '__main__':

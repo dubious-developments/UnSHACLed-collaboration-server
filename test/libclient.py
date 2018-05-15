@@ -27,7 +27,7 @@ def popen_dotnet(path, *args):
 
 
 def start_server(domain, *args):
-    """Launches the server. Does not return until it is ready to handle requests."""    
+    """Launches the server. Does not return until it is ready to handle requests."""
     server_path = os.path.abspath(
         os.path.join('src', 'UnSHACLed.Collaboration', 'bin', 'Debug',
                      'collaboration-server.exe'))
@@ -47,6 +47,11 @@ def start_server(domain, *args):
     return server
 
 
+def parse_bool(value):
+    """Converts a string to a Boolean."""
+    return value.strip().lower() == 'true'
+
+
 def request_token(domain):
     """Requests a token from the server."""
     response = requests.post(domain + '/auth/request-token')
@@ -58,7 +63,7 @@ def is_authenticated(domain, token):
     """Tests if a user's token is authenticated."""
     response = requests.get(domain + '/auth/is-authenticated/' + token)
     assert response.ok
-    return bool(response.text)
+    return parse_bool(response.text)
 
 
 def get_workspace(domain, token):
@@ -108,7 +113,7 @@ def request_lock(domain, token, repo_slug, file_path):
     response = requests.post('%s/repo/request-lock/%s/%s/%s' %
                              (domain, repo_slug, token, file_path))
     response.raise_for_status()
-    return bool(response.text)
+    return parse_bool(response.text)
 
 
 def relinquish_lock(domain, token, repo_slug, file_path):
@@ -120,8 +125,8 @@ def relinquish_lock(domain, token, repo_slug, file_path):
 
 def get_file_contents(domain, token, repo_slug, file_path):
     """Gets a file's contents."""
-    response = requests.get('%s/repo/file/%s/%s/%s' %
-                            (domain, repo_slug, token, file_path))
+    response = requests.get('%s/repo/file/%s/%s/%s' % (domain, repo_slug,
+                                                       token, file_path))
     response.raise_for_status()
     return response.text
 
