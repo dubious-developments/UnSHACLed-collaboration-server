@@ -10,3 +10,6 @@ packages/
 
 # Python cruft
 __pycache__/
+
+# Test workspaces
+UnSHACLed-workspaces/
