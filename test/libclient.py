@@ -26,15 +26,14 @@ def popen_dotnet(path, *args):
     return Popen(cmd, stdin=read)
 
 
-def start_server(domain, client_id, client_secret):
-    """Launches the server. Does not return until it is ready to handle requests."""
+def start_server(domain, *args):
+    """Launches the server. Does not return until it is ready to handle requests."""    
     server_path = os.path.abspath(
         os.path.join('src', 'UnSHACLed.Collaboration', 'bin', 'Debug',
                      'collaboration-server.exe'))
 
     log('Launching server...')
-    server = popen_dotnet(server_path, '-d', domain, '--client-id', client_id,
-                          '--client-secret', client_secret)
+    server = popen_dotnet(server_path, '-d', domain, *args)
 
     # Wait for the server to start.
     while True:

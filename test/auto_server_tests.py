@@ -17,10 +17,9 @@ class TestAuthentication(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    app_name, client_id, client_secret = sys.argv
-    server = start_server(domain, client_id, client_secret)
+    server = start_server(domain, '--mock-content-tracker')
     try:
-        unittest.main(argv=[app_name])
+        unittest.main()
     finally:
         server.kill()
         log('Stopped server.')
