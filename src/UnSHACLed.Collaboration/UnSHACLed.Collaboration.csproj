@@ -58,6 +58,7 @@
     <Compile Include="ContentTrackerException.cs" />
     <Compile Include="GitHubContentTracker.cs" />
     <Compile Include="HtmlHelpers.cs" />
+    <Compile Include="InMemoryContentTracker.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="RepoModule.cs" />
