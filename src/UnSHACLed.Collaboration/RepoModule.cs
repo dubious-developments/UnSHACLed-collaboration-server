@@ -101,8 +101,9 @@ namespace UnSHACLed.Collaboration
                 {
                     try
                     {
-                        return await client.GetFileContents(
+                        response["contents"] = await client.GetFileContents(
                             repoOwner, repoName, filePath);
+                        return response;
                     }
                     catch (ContentTrackerException)
                     {
