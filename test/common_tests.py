@@ -7,8 +7,10 @@ import random
 
 test_repo_name = 'dubious-developments/editor-test'
 
+
 def create_unit_tests(domain, token):
     """Creates the common unit tests."""
+
     class TestUser(unittest.TestCase):
         def test_email(self):
             """Tests that a user's email address can be retrieved."""
@@ -29,7 +31,6 @@ def create_unit_tests(domain, token):
             """Tests that a list of repository names can be retrieved."""
             assert test_repo_name in libclient.get_repo_names(domain, token)
 
-
     class TestWorkspace(unittest.TestCase):
         def test_round_trip(self):
             """Tests that a workspace can be round-tripped."""
@@ -45,40 +46,71 @@ def create_unit_tests(domain, token):
             libclient.set_workspace(domain, token, old_workspace)
             assert libclient.get_workspace(domain, token) == old_workspace
 
-
     class TestRepo(unittest.TestCase):
         def test_acquire_lock(self):
             """Tests that acquiring a lock works as expected."""
             file_name = 'test-file.txt'
-            assert not libclient.has_lock(domain, token, test_repo_name, file_name)
-            assert libclient.request_lock(domain, token, test_repo_name, file_name)
+            assert not libclient.has_lock(domain, token, test_repo_name,
+                                          file_name)
+            assert libclient.request_lock(domain, token, test_repo_name,
+                                          file_name)
             assert libclient.has_lock(domain, token, test_repo_name, file_name)
             libclient.relinquish_lock(domain, token, test_repo_name, file_name)
-            assert not libclient.has_lock(domain, token, test_repo_name, file_name)
+            assert not libclient.has_lock(domain, token, test_repo_name,
+                                          file_name)
 
         def test_round_trip(self):
             """Tests that a file can be round-tripped."""
             file_name = 'test-file.txt'
 
+            # Poll the file. Don't include a timestamp the first time around.
+            before_poll = libclient.poll_file(domain, token, test_repo_name,
+                                              file_name)
+            assert not before_poll['isModified']
+            assert 'contents' not in before_poll
+
             # Acquire a lock.
-            assert libclient.request_lock(domain, token, test_repo_name, file_name)
+            assert libclient.request_lock(domain, token, test_repo_name,
+                                          file_name)
 
             # Include a random number in the message so our changes
             # don't accidentally become no-ops.
             random_number = random.randint(0, 10000)
             message = 'The number I\'m thinking of is %d.\n' % random_number
-            libclient.set_file_contents(domain, token, test_repo_name, file_name,
-                                        message)
+            libclient.set_file_contents(domain, token, test_repo_name,
+                                        file_name, message)
             assert libclient.get_file_contents(domain, token, test_repo_name,
-                                            file_name) == message
+                                               file_name) == message
+
+            # Poll the file and check that it has actually changed.
+            first_after_poll = libclient.poll_file(
+                domain,
+                token,
+                test_repo_name,
+                file_name,
+                last_change_timestamp=before_poll['lastChange'])
+            assert first_after_poll['isModified']
+            assert first_after_poll['contents'] == message
 
             libclient.relinquish_lock(domain, token, test_repo_name, file_name)
 
+            # Now poll that same file again and check that it has *not*
+            # changed.
+            second_after_poll = libclient.poll_file(
+                domain,
+                token,
+                test_repo_name,
+                file_name,
+                last_change_timestamp=first_after_poll['lastChange'])
+            assert not second_after_poll['isModified']
+            assert 'contents' not in second_after_poll
+
     return {
         'TestUser': TestUser,
-        'TestRepo': TestRepo, 
+        'TestRepo': TestRepo,
         'TestWorkspace': TestWorkspace
     }
+
 
 def import_unit_tests(domain, token, environment):
     """Imports common unit tests into a particular environment."""

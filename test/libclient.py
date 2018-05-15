@@ -146,3 +146,12 @@ def set_file_contents(domain, token, repo_slug, file_path, contents):
         '%s/repo/file/%s/%s/%s' % (domain, repo_slug, token, file_path),
         data=contents)
     response.raise_for_status()
+
+
+def poll_file(domain, token, repo_slug, file_path, last_change_timestamp=None):
+    """Polls a file for changes."""
+    response = requests.get(
+        '%s/repo/poll-file/%s/%s/%s' % (domain, repo_slug, token, file_path),
+        data=last_change_timestamp)
+    response.raise_for_status()
+    return response.json()
