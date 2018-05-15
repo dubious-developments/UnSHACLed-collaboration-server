@@ -108,6 +108,15 @@ def get_repo_names(domain, token):
     return response.json()
 
 
+def has_lock(domain, token, repo_slug, file_path):
+    """Tests if a lock has been acquired by a user with a
+       particular token on a file in a repository."""
+    response = requests.get('%s/repo/has-lock/%s/%s/%s' % (domain, repo_slug,
+                                                           token, file_path))
+    response.raise_for_status()
+    return parse_bool(response.text)
+
+
 def request_lock(domain, token, repo_slug, file_path):
     """Requests a lock on a file in a repository."""
     response = requests.post('%s/repo/request-lock/%s/%s/%s' %

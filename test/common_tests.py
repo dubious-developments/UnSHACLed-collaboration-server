@@ -47,6 +47,15 @@ def create_unit_tests(domain, token):
 
 
     class TestRepo(unittest.TestCase):
+        def test_acquire_lock(self):
+            """Tests that acquiring a lock works as expected."""
+            file_name = 'test-file.txt'
+            assert not libclient.has_lock(domain, token, test_repo_name, file_name)
+            assert libclient.request_lock(domain, token, test_repo_name, file_name)
+            assert libclient.has_lock(domain, token, test_repo_name, file_name)
+            libclient.relinquish_lock(domain, token, test_repo_name, file_name)
+            assert not libclient.has_lock(domain, token, test_repo_name, file_name)
+
         def test_round_trip(self):
             """Tests that a file can be round-tripped."""
             file_name = 'test-file.txt'
