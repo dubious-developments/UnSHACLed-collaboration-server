@@ -66,8 +66,10 @@ def create_unit_tests(domain, token):
             # Poll the file. Don't include a timestamp the first time around.
             before_poll = libclient.poll_file(domain, token, test_repo_name,
                                               file_name)
-            assert not before_poll['isModified']
-            assert 'contents' not in before_poll
+
+            # May not be true on a live server:
+            #     assert not before_poll['isModified']
+            #     assert 'contents' not in before_poll
 
             # Acquire a lock.
             assert libclient.request_lock(domain, token, test_repo_name,
@@ -104,6 +106,9 @@ def create_unit_tests(domain, token):
                 last_change_timestamp=first_after_poll['lastChange'])
             assert not second_after_poll['isModified']
             assert 'contents' not in second_after_poll
+
+            # Also check that the file exists on the server.
+            assert file_name in libclient.get_file_names(domain, token, test_repo_name)
 
     return {
         'TestUser': TestUser,

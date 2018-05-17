@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nancy;
@@ -119,12 +120,38 @@ namespace UnSHACLed.Collaboration
             }
         }
 
+        public IReadOnlyList<string> GetFileNames(
+            string repoOwner,
+            string repoName)
+        {
+            var repoSlug = GetRepoKey(repoOwner, repoName) + "/";
+            try
+            {
+                fileLock.EnterReadLock();
+                return fileStorage.Keys
+                    .Where(k => k.StartsWith(repoSlug))
+                    .Select(k => k.Substring(repoSlug.Length))
+                    .ToArray();
+            }
+            finally
+            {
+                fileLock.ExitReadLock();
+            }
+        }
+
+        private static string GetRepoKey(
+            string repoOwner,
+            string repoName)
+        {
+            return repoOwner + "/" + repoName;
+        }
+
         private static string GetFileKey(
             string repoOwner,
             string repoName,
             string filePath)
         {
-            return repoOwner + "/" + repoName + "/" + filePath;
+            return GetRepoKey(repoOwner, repoName) + "/" + filePath;
         }
     }
 
@@ -240,6 +267,15 @@ namespace UnSHACLed.Collaboration
                     repoName,
                     filePath,
                     contents));
+        }
+
+        /// <inheritdoc/>
+        public override Task<IReadOnlyList<string>> GetFileNames(string repoOwner, string repoName)
+        {
+            return Task.FromResult(
+                token.Tracker.GetFileNames(
+                    repoOwner,
+                    repoName));
         }
     }
 }

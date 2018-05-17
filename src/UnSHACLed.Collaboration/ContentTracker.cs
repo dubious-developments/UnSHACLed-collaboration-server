@@ -70,6 +70,22 @@ namespace UnSHACLed.Collaboration
         public abstract Task<IReadOnlyList<string>> GetRepositoryNames();
 
         /// <summary>
+        /// Gets a list of all files stored in a repository.
+        /// </summary>
+        /// <param name="repoOwner">
+        /// The login of the repository's owner.
+        /// </param>
+        /// <param name="repoName">
+        /// The name of the repository.
+        /// </param>
+        /// <returns>
+        /// A task that produces a list of file names.
+        /// </returns>
+        public abstract Task<IReadOnlyList<string>> GetFileNames(
+            string repoOwner,
+            string repoName);
+
+        /// <summary>
         /// Fetches a file's contents.
         /// </summary>
         /// <param name="repoOwner">

@@ -247,5 +247,18 @@ namespace UnSHACLed.Collaboration
                 return true;
             }
         }
+
+        /// <inheritdoc/>
+        public override async Task<IReadOnlyList<string>> GetFileNames(
+            string repoOwner,
+            string repoName)
+        {
+            var rootContents = await Client.Repository.Content.GetAllContents(
+                repoOwner, repoName);
+            return rootContents
+                .Where(file => file.Type.Value == ContentType.File)
+                .Select(file => file.Path)
+                .ToArray();
+        }
     }
 }

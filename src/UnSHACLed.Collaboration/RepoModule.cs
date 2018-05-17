@@ -116,6 +116,16 @@ namespace UnSHACLed.Collaboration
                 }
             });
 
+            RegisterContentTrackerGet<dynamic>(
+                "/file-names/{owner}/{repoName}/{token}",
+                async (args, user, client) =>
+            {
+                string repoOwner = args.owner;
+                string repoName = args.repoName;
+
+                return await client.GetFileNames(repoOwner, repoName);
+            });
+
             RegisterUserGet<bool>(
                 "/has-lock/{owner}/{repoName}/{token}/{filePath}",
                 (args, user) =>

@@ -155,3 +155,11 @@ def poll_file(domain, token, repo_slug, file_path, last_change_timestamp=None):
         data=last_change_timestamp)
     response.raise_for_status()
     return response.json()
+
+
+def get_file_names(domain, token, repo_slug):
+    """Gets a list of the file names in a repository."""
+    response = requests.get('%s/repo/file-names/%s/%s' % (domain, repo_slug,
+                                                          token))
+    response.raise_for_status()
+    return response.json()
