@@ -260,5 +260,19 @@ namespace UnSHACLed.Collaboration
                 .Select(file => file.Path)
                 .ToArray();
         }
+
+        /// <inheritdoc/>
+        public override async Task<string> CreateRepository(string repoName)
+        {
+            try
+            {
+                var repo = await Client.Repository.Create(new NewRepository(repoName));
+                return repo.FullName;
+            }
+            catch (RepositoryExistsException)
+            {
+                return (await GetLogin()) + "/" + repoName;
+            }
+        }
     }
 }

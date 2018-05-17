@@ -19,11 +19,19 @@ namespace UnSHACLed.Collaboration
         public InMemoryContentTracker()
         {
             this.fileStorage = new Dictionary<string, string>();
+            this.repoNames = new SortedSet<string>();
             this.fileLock = new ReaderWriterLockSlim();
         }
 
         private Dictionary<string, string> fileStorage;
+        private SortedSet<string> repoNames;
         private ReaderWriterLockSlim fileLock;
+
+        /// <summary>
+        /// Gets a collection of repository names maintained by this
+        /// content tracker.
+        /// </summary>
+        public IReadOnlyCollection<string> RepositoryNames => repoNames;
 
         /// <inheritdoc/>
         public override void ConfigureAuthenticationModule(NancyModule module)
@@ -120,6 +128,18 @@ namespace UnSHACLed.Collaboration
             }
         }
 
+        /// <summary>
+        /// Gets a list of all file names in a particular repository.
+        /// </summary>
+        /// <param name="repoOwner">
+        /// The login of the repository's owner.
+        /// </param>
+        /// <param name="repoName">
+        /// The name of the repository to inspect.
+        /// </param>
+        /// <returns>
+        /// A list of file names.
+        /// </returns>
         public IReadOnlyList<string> GetFileNames(
             string repoOwner,
             string repoName)
@@ -137,6 +157,24 @@ namespace UnSHACLed.Collaboration
             {
                 fileLock.ExitReadLock();
             }
+        }
+
+        /// <summary>
+        /// Creates a new repository.
+        /// </summary>
+        /// <param name="ownerName">
+        /// The login of the repository's owner.
+        /// </param>
+        /// <param name="repoName">
+        /// The name of the repository to create.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if a new repository is created;
+        /// <c>false</c> if it exists already.
+        /// </returns>
+        public bool CreateRepository(string ownerName, string repoName)
+        {
+            return repoNames.Add(GetRepoKey(ownerName, repoName));
         }
 
         private static string GetRepoKey(
@@ -238,7 +276,7 @@ namespace UnSHACLed.Collaboration
         public override Task<IReadOnlyList<string>> GetRepositoryNames()
         {
             return Task.FromResult<IReadOnlyList<string>>(
-                new[] { "dubious-developments/editor-test" });
+                token.Tracker.RepositoryNames.ToArray());
         }
 
         /// <inheritdoc/>
@@ -276,6 +314,13 @@ namespace UnSHACLed.Collaboration
                 token.Tracker.GetFileNames(
                     repoOwner,
                     repoName));
+        }
+
+        /// <inheritdoc/>
+        public override Task<string> CreateRepository(string repoName)
+        {
+            token.Tracker.CreateRepository(token.Login, repoName);
+            return Task.FromResult(token.Login + "/" + repoName);
         }
     }
 }

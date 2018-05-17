@@ -47,7 +47,9 @@ namespace UnSHACLed.Collaboration
 
             if (parsedOptions.GetValue<bool>(Options.MockContentTracker))
             {
-                ContentTrackerCredentials.ContentTracker = new InMemoryContentTracker();
+                var memTracker = new InMemoryContentTracker();
+                memTracker.CreateRepository("dubious-developments", "editor-test");
+                ContentTrackerCredentials.ContentTracker = memTracker;
             }
             else
             {

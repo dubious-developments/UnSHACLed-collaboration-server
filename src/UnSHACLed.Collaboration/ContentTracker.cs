@@ -132,5 +132,17 @@ namespace UnSHACLed.Collaboration
             string repoName,
             string filePath,
             string contents);
+
+        /// <summary>
+        /// Creates a new repository with a particular name.
+        /// </summary>
+        /// <param name="repoName">
+        /// The name of the repository to create.
+        /// </param>
+        /// <returns>
+        /// A task that returns the repository's slug, which
+        /// consists of an owner and the repository name.
+        /// </returns>
+        public abstract Task<string> CreateRepository(string repoName);
     }
 }
