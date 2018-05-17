@@ -126,6 +126,14 @@ namespace UnSHACLed.Collaboration
                 return await client.GetFileNames(repoOwner, repoName);
             });
 
+            RegisterContentTrackerPost(
+                "/create-repo/{repoName}/{token}",
+                (args, user, client) =>
+            {
+                string repoName = args.repoName;
+                return client.CreateRepository(repoName);
+            });
+
             RegisterUserGet<bool>(
                 "/has-lock/{owner}/{repoName}/{token}/{filePath}",
                 (args, user) =>
