@@ -163,3 +163,12 @@ def get_file_names(domain, token, repo_slug):
                                                           token))
     response.raise_for_status()
     return response.json()
+
+
+def create_repo(domain, token, name):
+    """Creates a new repository if it does not exist already.
+       Returns the repository's slug ({owner}/{name} string)."""
+    response = requests.post('%s/repo/create-repo/%s/%s' % (domain, name,
+                                                            token))
+    response.raise_for_status()
+    return response.text
