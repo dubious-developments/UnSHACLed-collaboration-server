@@ -56,6 +56,7 @@
     <Compile Include="ContentTrackerAccessModule.cs" />
     <Compile Include="ContentTrackerCredentials.cs" />
     <Compile Include="ContentTrackerException.cs" />
+    <Compile Include="CorsBootstrapper.cs" />
     <Compile Include="GitHubContentTracker.cs" />
     <Compile Include="HtmlHelpers.cs" />
     <Compile Include="InMemoryContentTracker.cs" />

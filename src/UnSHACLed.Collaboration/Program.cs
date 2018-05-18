@@ -70,7 +70,7 @@ namespace UnSHACLed.Collaboration
                 return 1;
             }
 
-            using (var nancyHost = new NancyHost(domainUris))
+            using (var nancyHost = new NancyHost(new CorsBootstrapper(), domainUris))
             {
                 nancyHost.Start();
                 log.Log(
