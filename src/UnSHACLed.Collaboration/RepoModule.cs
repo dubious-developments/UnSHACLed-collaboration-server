@@ -161,7 +161,7 @@ namespace UnSHACLed.Collaboration
                 lock (lockDictionary)
                 {
                     var lockOwner = GetLockOwner(repoOwner, repoName, filePath);
-                    if (lockOwner == null)
+                    if (lockOwner == null || !lockOwner.IsActive)
                     {
                         lockDictionary[CreateFileKey(repoOwner, repoName, filePath)] = user;
                         return Task.FromResult(true);
