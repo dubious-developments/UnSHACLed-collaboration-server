@@ -189,7 +189,18 @@ namespace UnSHACLed.Collaboration
                     var lockOwner = GetLockOwner(repoOwner, repoName, filePath);
                     if (lockOwner == null || !lockOwner.IsActive)
                     {
-                        lockDictionary[CreateFileKey(repoOwner, repoName, filePath)] = user;
+                        var key = CreateFileKey(repoOwner, repoName, filePath);
+                        Program.GlobalLog.Log(
+                            new LogEntry(
+                                Severity.Info,
+                                "log acquisition",
+                                Quotation.QuoteEvenInBold(
+                                    "user ",
+                                    user.Token,
+                                    " acquired a lock on file ",
+                                    key,
+                                    ". Good for them.")));
+                        lockDictionary[key] = user;
                         return Task.FromResult(true);
                     }
                     else if (lockOwner.Token == user.Token)

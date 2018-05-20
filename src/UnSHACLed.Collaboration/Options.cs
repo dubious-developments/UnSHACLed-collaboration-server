@@ -80,6 +80,14 @@ namespace UnSHACLed.Collaboration
                 "default GitHub content tracker.");
 
         /// <summary>
+        /// The 'verbose' option, which does exactly what you might expect it to.
+        /// </summary>
+        public static readonly Option Verbose = FlagOption.CreateFlagOption(
+            OptionForm.Short("v"),
+            OptionForm.Long("verbose"))
+            .WithDescription("Print verbose output. Useful for debugging.");
+
+        /// <summary>
         /// A read-only list of all options accepted by the collaboration
         /// server.
         /// </summary>
@@ -89,7 +97,8 @@ namespace UnSHACLed.Collaboration
             ClientSecret,
             Domains,
             Help,
-            MockContentTracker
+            MockContentTracker,
+            Verbose
         };
     }
 }

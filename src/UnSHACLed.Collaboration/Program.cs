@@ -75,14 +75,16 @@ namespace UnSHACLed.Collaboration
                 return 1;
             }
 
-            GlobalLog = log;
+            GlobalLog = parsedOptions.GetValue<bool>(Options.Verbose)
+                ? (ILog)log
+                : new FilteringLog(log);
 
             using (var nancyHost = new NancyHost(new CorsBootstrapper(), domainUris))
             {
                 nancyHost.Start();
                 log.Log(
                     new LogEntry(
-                        Severity.Info,
+                        Severity.Message,
                         "server started",
                         "server is up now."));
 
@@ -179,6 +181,28 @@ namespace UnSHACLed.Collaboration
                             "option ",
                             option.Forms[0].ToString(),
                             " is mandatory but left blank.")));
+            }
+        }
+
+        private sealed class FilteringLog : ILog
+        {
+            public FilteringLog(ILog target)
+            {
+                this.Target = target;
+            }
+
+            /// <summary>
+            /// Gets the inner log to send messages to.
+            /// </summary>
+            public ILog Target { get; private set; }
+
+            /// <inheritdoc/>
+            public void Log(LogEntry entry)
+            {
+                if (entry.Severity > Severity.Info)
+                {
+                    Target.Log(entry);
+                }
             }
         }
     }
