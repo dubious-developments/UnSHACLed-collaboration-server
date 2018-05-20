@@ -65,7 +65,9 @@ namespace UnSHACLed.Collaboration
                                 Quotation.QuoteEvenInBold(
                                     "request ",
                                     "PUT " + Request.Url.ToString(),
-                                    " tried to update a file but didn't hold a lock.")));
+                                    " tried to update file ",
+                                    CreateFileKey(repoOwner, repoName, filePath),
+                                    " but didn't hold a lock.")));
                         return HttpStatusCode.BadRequest;
                     }
                 }
@@ -199,7 +201,7 @@ namespace UnSHACLed.Collaboration
                                     user.Token,
                                     " acquired a lock on file ",
                                     key,
-                                    ". Good for them.")));
+                                    ".")));
                         lockDictionary[key] = user;
                         return Task.FromResult(true);
                     }
@@ -227,7 +229,18 @@ namespace UnSHACLed.Collaboration
                     var lockOwner = GetLockOwner(repoOwner, repoName, filePath);
                     if (lockOwner == null || lockOwner.Token == user.Token)
                     {
-                        lockDictionary.Remove(CreateFileKey(repoOwner, repoName, filePath));
+                        var key = CreateFileKey(repoOwner, repoName, filePath);
+                        lockDictionary.Remove(key);
+                        Program.GlobalLog.Log(
+                            new LogEntry(
+                                Severity.Info,
+                                "log relinquished",
+                                Quotation.QuoteEvenInBold(
+                                    "user ",
+                                    user.Token,
+                                    " relinquished a lock on file ",
+                                    key,
+                                    ".")));
                         return Task.FromResult(HttpStatusCode.OK);
                     }
                     else
