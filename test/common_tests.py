@@ -119,13 +119,16 @@ def create_unit_tests(domain, token):
             assert libclient.request_lock(domain, token, test_repo_name,
                                           file_name)
 
+            # Create a new file by setting its contents.
             message = 'This is just a test file. Move along now.\n'
             libclient.set_file_contents(domain, token, test_repo_name,
                                         file_name, message)
 
+            # Check that the newly created file's contents are okay.
             assert libclient.get_file_contents(domain, token, test_repo_name,
                                                file_name) == message
 
+            # Release the lock.
             libclient.relinquish_lock(domain, token, test_repo_name, file_name)
 
     return {
