@@ -108,7 +108,25 @@ def create_unit_tests(domain, token):
             assert 'contents' not in second_after_poll
 
             # Also check that the file exists on the server.
-            assert file_name in libclient.get_file_names(domain, token, test_repo_name)
+            assert file_name in libclient.get_file_names(domain, token,
+                                                         test_repo_name)
+
+        def test_create_file(self):
+            """Tests that a file can be created."""
+            file_name = 'test-file%d.txt' % (random.randint(1, 100000))
+
+            # Acquire a lock.
+            assert libclient.request_lock(domain, token, test_repo_name,
+                                          file_name)
+
+            message = 'This is just a test file. Move along now.\n'
+            libclient.set_file_contents(domain, token, test_repo_name,
+                                        file_name, message)
+
+            assert libclient.get_file_contents(domain, token, test_repo_name,
+                                               file_name) == message
+
+            libclient.relinquish_lock(domain, token, test_repo_name, file_name)
 
     return {
         'TestUser': TestUser,
