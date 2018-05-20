@@ -12,6 +12,11 @@ namespace UnSHACLed.Collaboration
 {
     public static class Program
     {
+        /// <summary>
+        /// Gets the log to use for global logging purposes.
+        /// </summary>
+        public static ILog GlobalLog { get; private set; }
+
         public static int Main(string[] args)
         {
             // Create a pretty log.
@@ -69,6 +74,8 @@ namespace UnSHACLed.Collaboration
                 // An error has already been reported. Just exit.
                 return 1;
             }
+
+            GlobalLog = log;
 
             using (var nancyHost = new NancyHost(new CorsBootstrapper(), domainUris))
             {

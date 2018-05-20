@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Nancy;
 using Nancy.Extensions;
 using Octokit;
+using Pixie;
+using Pixie.Markup;
 
 namespace UnSHACLed.Collaboration
 {
@@ -32,6 +34,14 @@ namespace UnSHACLed.Collaboration
                 }
                 catch (ContentTrackerException)
                 {
+                    Program.GlobalLog.Log(
+                        new LogEntry(
+                            Severity.Warning,
+                            "malformed request",
+                            Quotation.QuoteEvenInBold(
+                                "request ",
+                                "GET " + Request.Url.ToString(),
+                                " tried to read an entity that is not a file.")));
                     return HttpStatusCode.BadRequest;
                 }
             });
@@ -48,6 +58,14 @@ namespace UnSHACLed.Collaboration
                     var lockOwner = GetLockOwner(repoOwner, repoName, filePath);
                     if (lockOwner != user)
                     {
+                        Program.GlobalLog.Log(
+                            new LogEntry(
+                                Severity.Warning,
+                                "malformed request",
+                                Quotation.QuoteEvenInBold(
+                                    "request ",
+                                    "PUT " + Request.Url.ToString(),
+                                    " tried to update a file but didn't hold a lock.")));
                         return HttpStatusCode.BadRequest;
                     }
                 }
@@ -69,6 +87,14 @@ namespace UnSHACLed.Collaboration
                 }
                 catch (ContentTrackerException)
                 {
+                    Program.GlobalLog.Log(
+                        new LogEntry(
+                            Severity.Warning,
+                            "malformed request",
+                            Quotation.QuoteEvenInBold(
+                                "request ",
+                                "PUT " + Request.Url.ToString(),
+                                " tried to update an entity that is a file.")));
                     return HttpStatusCode.BadRequest;
                 }
             });

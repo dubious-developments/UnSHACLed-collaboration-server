@@ -2,6 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Nancy;
 using Octokit;
+using Pixie;
+using Pixie.Markup;
 
 namespace UnSHACLed.Collaboration
 {
@@ -133,6 +135,14 @@ namespace UnSHACLed.Collaboration
                 User user;
                 if (!User.TryGetByToken(args.token, out user))
                 {
+                    Program.GlobalLog.Log(
+                        new LogEntry(
+                            Severity.Warning,
+                            "malformed request",
+                            Quotation.QuoteEvenInBold(
+                                "token ",
+                                args.token,
+                                " does not exist.")));
                     return HttpStatusCode.BadRequest;
                 }
                 else if (user.IsAuthenticated)
