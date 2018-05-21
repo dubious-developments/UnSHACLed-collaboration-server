@@ -46,6 +46,24 @@ def create_unit_tests(domain, token):
             libclient.set_workspace(domain, token, old_workspace)
             assert libclient.get_workspace(domain, token) == old_workspace
 
+        def test_quotes(self):
+            """Tests that quotes are not escaped."""
+            # Get the old workspace so we can restore it afterward.
+            old_workspace = libclient.get_workspace(domain, token)
+
+            # Create a workspace string that includes quotes.
+            new_workspace = """{
+                "SHACLShapesGraph": [],
+                "DataGraph": [],
+                "IO": []
+            }"""
+            libclient.set_workspace(domain, token, new_workspace)
+            assert libclient.get_workspace(domain, token) == new_workspace
+
+            # Restore the old workspace.
+            libclient.set_workspace(domain, token, old_workspace)
+            assert libclient.get_workspace(domain, token) == old_workspace
+
     class TestRepo(unittest.TestCase):
         def test_acquire_lock(self):
             """Tests that acquiring a lock works as expected."""
